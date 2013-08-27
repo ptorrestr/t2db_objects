@@ -10,13 +10,19 @@ from threading import Semaphore
 from objects import User
 from objects import Tweet
 from objects import Job
+from objects import Configuration
 from objects import ObjectList
 from objects import parseText
 from objects import encodeObject
+from objects import formatHash
 
 from psocket import SocketServer
 from psocket import SocketClient
 from psocket import SocketControl
+
+from utilities import readConfigFile
+from utilities import writeFile
+from utilities import removeFile
 
 def randomInteger(maxSize):
     return random.randint(0, maxSize)
@@ -129,15 +135,12 @@ class TestTweetObject(unittest.TestCase):
     def setUp(self):
         self.rawTweet0 = randomTweet(0, "date", 0)
         self.rawTweet1 = randomTweet(1, "date", 0)
-        
         #Invalid tweet no id
         self.rawTweet2 = randomTweet(2, "date", 0)
         del self.rawTweet2["id"]
-
         #Invalid tweet, no created_at
         self.rawTweet3 = randomTweet(3, "date", 0)
         del self.rawTweet3["created_at"]
-
         #Invalid tweet, no user
         self.rawTweet4 = randomTweet(4, "date", 0)
         del self.rawTweet4["user"]
@@ -145,6 +148,8 @@ class TestTweetObject(unittest.TestCase):
     def test_tweetCreationValid(self):
         tweet0 = Tweet(self.rawTweet0)
         tweet1 = Tweet(self.rawTweet1)
+        self.assertTrue(tweet0.equalHash(self.rawTweet0))
+        self.assertTrue(tweet1.equalHash(self.rawTweet1))
 
     def test_tweetCompareTo(self):
         tweet0 = Tweet(self.rawTweet0)
@@ -159,16 +164,11 @@ class TestTweetObject(unittest.TestCase):
 
     def test_tweetToHash(self):
         tweet0 = Tweet(self.rawTweet0)
-        hashTweet0 = tweet0.toHash()
-        self.assertTrue("id" in hashTweet0)
-        self.assertTrue("created_at" in hashTweet0)
-        self.assertTrue("user" in hashTweet0)
-
         tweet1 = Tweet(self.rawTweet1)
         hashTweet1 = tweet1.toHash()
-        self.assertTrue("id" in hashTweet1)
-        self.assertTrue("created_at" in hashTweet1)
-        self.assertTrue("user" in hashTweet1)
+        hashTweet0 = tweet0.toHash()
+        self.assertTrue(tweet0.equalHash(hashTweet0))
+        self.assertTrue(tweet1.equalHash(hashTweet1))
 
 ###############################################################################
 # Test for USER object
@@ -178,15 +178,12 @@ class TestUserObject(unittest.TestCase):
     def setUp(self):
         self.rawUser0 = randomUser(0, "date", "user0")
         self.rawUser1 = randomUser(1, "date", "user1")
-        
         # Invalid user no id
         self.rawUser2 = randomUser(2, "date", "user2")
         del self.rawUser2["id"]
-
         # Invalid user no created_at
         self.rawUser3 = randomUser(3, "date", "user3")
         del self.rawUser3["created_at"]
-
         # Invalid user no name
         self.rawUser4 = randomUser(4, "date", "user4")
         del self.rawUser4["name"]
@@ -194,8 +191,10 @@ class TestUserObject(unittest.TestCase):
     def test_userCreationValid(self):
         user0 = User(self.rawUser0)
         user1 = User(self.rawUser1)
+        self.assertTrue(user0.equalHash(self.rawUser0))
+        self.assertTrue(user1.equalHash(self.rawUser1))
 
-    def test_userCompareTo(self):
+    def test_userEqual(self):
         user0 = User(self.rawUser0)
         user1 = User(self.rawUser1)
         self.assertTrue(user0.equal(user0))
@@ -208,16 +207,11 @@ class TestUserObject(unittest.TestCase):
 
     def test_userToHash(self):
         user0 = User(self.rawUser0)
-        hashUser0 = user0.toHash()
-        self.assertTrue("id" in hashUser0)
-        self.assertTrue("created_at" in hashUser0)
-        self.assertTrue("name" in hashUser0)
-
         user1 = User(self.rawUser1)
+        hashUser0 = user0.toHash()
         hashUser1 = user1.toHash()
-        self.assertTrue("id" in hashUser1)
-        self.assertTrue("created_at" in hashUser1)
-        self.assertTrue("name" in hashUser1)
+        self.assertTrue(user0.equalHash(hashUser0))
+        self.assertTrue(user1.equalHash(hashUser1))
 
 ###############################################################################
 # test for JOB object
@@ -237,10 +231,10 @@ class TestJobObject(unittest.TestCase):
     def test_jobCreationValid(self):
         job0 = Job(self.rawJob0)
         job1 = Job(self.rawJob1)
-        self.assertTrue(job0.command == self.rawJob0["command"])
-        self.assertTrue(job1.command == self.rawJob1["command"])
+        self.assertTrue(job0.equalHash(self.rawJob0))
+        self.assertTrue(job1.equalHash(self.rawJob1))
 
-    def test_jobCompareTo(self):
+    def test_jobEqual(self):
         job0 = Job(self.rawJob0)
         job1 = Job(self.rawJob1)
         self.assertTrue(job0.equal(job0))
@@ -252,14 +246,52 @@ class TestJobObject(unittest.TestCase):
 
     def test_jobToHash(self):
         job0 = Job(self.rawJob0)
-        hashJob0 = job0.toHash()
-        self.assertTrue("command" in hashJob0)
-        self.assertTrue("process_id" in hashJob0)
-        
         job1 = Job(self.rawJob1)
+        hashJob0 = job0.toHash()
         hashJob1 = job1.toHash()
-        self.assertTrue("command" in hashJob1)
-        self.assertTrue("process_id" in hashJob1)
+        self.assertTrue(job0.equalHash(hashJob0))
+        self.assertTrue(job1.equalHash(hashJob1))
+
+###############################################################################
+# test for CONFIGURATION object
+#
+###############################################################################
+class TestConfigurationObject(unittest.TestCase):
+    def setUp(self):
+        self.configFilePath = "./tempConfigFile.conf"
+        self.configurationFields = [
+            {"name":"urldatabase", "kind":"mandatory", "type":str},
+            {"name":"socket_port", "kind":"mandatory", "type":int},
+            {"name":"max_connection", "kind":"mandatory", "type":int},
+            {"name":"collector_app", "kind":"mandatory", "type":str},
+            {"name":"path_collector_app", "kind":"mandatory", "type":str},
+            {"name":"output_folder", "kind":"mandatory", "type":str},
+            ]
+
+        # Create a temporal file with configuration
+        outputStr = ""
+        for field in self.configurationFields:
+            if field["type"] == str:
+                outputStr += field["name"] + " = " + randomStringFixed(10)
+            elif field["type"] == int:
+                outputStr += field["name"] + " = " + str(randomInteger(100))
+            outputStr += "\n"
+        writeFile(self.configFilePath, outputStr)
+
+    def test_configurationCreationValid(self):
+        rawConfigurationNoFormat = readConfigFile(self.configFilePath)
+        rawConfiguration = formatHash(rawConfigurationNoFormat, self.configurationFields)
+        configuration = Configuration(self.configurationFields, rawConfiguration)
+        self.assertTrue(configuration, rawConfiguration)
+
+    def test_configurationCreationInvalid(self):
+        rawConfigurationNoFormat = readConfigFile(self.configFilePath)
+        rawConfiguration = formatHash(rawConfigurationNoFormat, self.configurationFields)
+        del rawConfiguration["urldatabase"]
+        self.assertRaises(Exception, Configuration, (self.configurationFields, rawConfiguration))
+
+    def tearDown(self):
+        removeFile(self.configFilePath)
 
 ###############################################################################
 # Test for OBJECTLIST object
@@ -295,13 +327,11 @@ class TestObjectList(unittest.TestCase):
             tweet = Tweet(randomTweet(i, "date", 0))
             objectList1.append(tweet)
         hashObjectList1 = objectList1.toHash()
-
+        internalList1 = objectList1.getList()
         self.assertTrue("list" in hashObjectList1)
         for i in range(0, randomElements):
             subHash = hashObjectList1["list"][i]
-            self.assertTrue("id" in subHash)
-            self.assertTrue("created_at" in subHash)
-            self.assertTrue("user" in subHash)
+            self.assertTrue(internalList1[i].equalHash(subHash))
 
     def test_listParse(self):
         randomElements = randomInteger(100)
@@ -310,15 +340,12 @@ class TestObjectList(unittest.TestCase):
             tweet = Tweet(randomTweet(i, "date", 0))
             objectList1.append(tweet)
         hashObjectList1 = objectList1.toHash()
-
         parsedObjectList1 = ObjectList()
         parsedObjectList1.parse(hashObjectList1)
-
         internalList1 = objectList1.getList()
         internalList2 = parsedObjectList1.getList()
-
         for i in range(0, randomElements):
-            self.assertTrue(internalList1[i].id == internalList2[i].id)
+            self.assertTrue(internalList1[i].equal(internalList2[i]))
 
 ###############################################################################
 # Test for PARSETEXT and ENCODEOBJECT methods

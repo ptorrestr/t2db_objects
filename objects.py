@@ -152,8 +152,12 @@ class Object(object):
     # to a hashMap
     def __init__(self, objectFields, rawObject):
         for field in objectFields:
-            if not "name" in field or not "kind" in field or not "type" in field:
-                raise Exception ("'" + field + "' is not valid tuple")
+            if not "name" in field:
+                raise Exception ("'" + field + "' is not valid tuple: Name missing")
+            if not "kind" in field:
+                raise Exception ("'" + field + "' is not valid tuple: Kind missing")
+            if not "type" in field:
+                raise Exception ("'" + field + "' is not valid tuple: Type missing")
             name_ = field["name"]
             kind_ = field["kind"]
             type_ = field["type"]
@@ -170,10 +174,11 @@ class Object(object):
                     if type(rawObject[name_]) is not type_:
                         raise Exception ("'"+ name_ + "' must be '" + str(type_) + "'")
                     self.__dict__[name_] = rawObject[name_]
+        self.myFields = objectFields
 
-    def toHash(self, objectFields):
+    def toHash(self):
         args = {}
-        for field in objectFields:
+        for field in self.myFields:
             if not "name" in field:
                 raise Exception ("'" + field + "' is not valid tuple")
             name_ = field["name"]
@@ -182,26 +187,53 @@ class Object(object):
             args[name_] = self.__dict__[name_]
         return args
 
-    def equal(self, rObject, objectFields):
-        for field in objectFields:
-            if not "name" in field or not "kind" in field or not "type" in field:
-                raise Exception ("'" + field + "' is not valid tuple")
+    def equal(self, rObject):
+        hash_ = rObject.__dict__
+        return self.equalHash(hash_)
+
+    def equalHash(self, rHash):
+        for field in self.myFields:
+            if not "name" in field:
+                raise Exception ("'" + field + "' is not valid tuple: Name missing")
+            if not "kind" in field:
+                raise Exception ("'" + field + "' is not valid tuple: Kind missing")
+            if not "type" in field:
+                raise Exception ("'" + field + "' is not valid tuple: Type missing")
             name_ = field["name"]
             kind_ = field["kind"]
             type_ = field["type"]
             # If field is mandatory and is not present in self
             if kind_ == "mandatory" and not name_ in self.__dict__:
                 raise Exception ("'Left object does not have '" + name_ + "'")
-            if kind_ == "mandatory" and not name_ in rObject.__dict__:
+            if kind_ == "mandatory" and not name_ in rHash:
                 raise Exception ("'Rigth object does not have '" + name_ + "'")
             # If field in left object and not in right object?
-            if name_ in self.__dict__ and not name_ in rObject.__dict__:
+            if name_ in self.__dict__ and not name_ in rHash:
                 return False
-            if name_ in rObject.__dict__ and not name_ in self.__dict__:
+            if name_ in rHash and not name_ in self.__dict__:
                 return False
-            if not self.__dict__[name_] == rObject.__dict__[name_]:
+            if not self.__dict__[name_] == rHash[name_]:
                 return False
         return True
+
+# Format hash to corresponding type
+def formatHash(myHash, myFields):
+    newHash = {}
+    for field in myFields:
+        if not "name" in field:
+            raise Exception ("'" + field + "' is not valid tuple: Name missing")
+        if not "kind" in field:
+            raise Exception ("'" + field + "' is not valid tuple: Kind missing")
+        if not "type" in field:
+            raise Exception ("'" + field + "' is not valid tuple: Type missing")
+        name_ = field["name"]
+        kind_ = field["kind"]
+        type_ = field["type"]
+        if kind_ == "mandatory" and not name_ in myHash:
+            raise Exception ("'Object does not have '" + name_ + "'")
+        if name_ in myHash:
+            newHash[name_] = type_(myHash[name_])
+    return newHash
 
 class Tweet(Object):
     # Create a new tweet object. Use only the inputdata provided. If the data
@@ -214,12 +246,15 @@ class Tweet(Object):
             raise Exception("Tweet creation failed: " + str(e))
 
     def toHash(self):
-        args = super(Tweet, self).toHash(tweetFields)
+        args = super(Tweet, self).toHash()
         args['_type'] = "Tweet"
         return args
 
     def equal(self, rObject):
-        return super(Tweet, self).equal(rObject, tweetFields)
+        return super(Tweet, self).equal(rObject)
+
+    def equalHash(self, rHash):
+        return super(Tweet, self).equalHash(rHash)
 
 class User(Object):
     # Create a new user object. Use only the inputdata provided. If the data
@@ -232,12 +267,15 @@ class User(Object):
             raise Exception("User creation failed: " + str(e))
 
     def toHash(self):
-        args = super(User,self).toHash(userFields)
+        args = super(User,self).toHash()
         args['_type'] = "User"
         return args
 
     def equal(self, rObject):
-        return super(User, self).equal(rObject, userFields)
+        return super(User, self).equal(rObject)
+
+    def equalHash(self, rHash):
+        return super(User, self).equalHash(rHash)
 
 class Job(Object):
     # Create a new Job Object. If the data is not given for a field, a None
@@ -250,12 +288,37 @@ class Job(Object):
             raise Exception("Job creation failed: " + str(e))
 
     def toHash(self):
-        args = super(Job, self).toHash(jobFields)
+        args = super(Job, self).toHash()
         args['_type'] = "Job"
         return args
 
     def equal(self, rObject):
-        return super(Job, self).equal(rObject, jobFields)
+        return super(Job, self).equal(rObject)
+
+    def equalHash(self, rHash):
+        return super(Job, self).equalHash(rHash)
+
+class Configuration(Object):
+    # This objects is for the input configuration given by the user through a
+    # file. It works similar as every Object: The user must defined a model and
+    # given to it in the constructor.
+
+    def __init__(self, configurationFields, rawConfiguration):
+        try:
+            super(Configuration, self).__init__(configurationFields, rawConfiguration)
+        except Exception as e:
+            raise Exception("Configuration creation failed: " + str(e))
+    
+    def toHash(self):
+        args = super(Configuration, self).toHash()
+        args['_type'] = "Configuration"
+        return args
+
+    def equal(self, rObject):
+        return super(Configuration, self).equal(rObject)
+
+    def equalHash(self, rHash):
+        return super(Configuration, self).equalHash(rHash)
 
 # TODO this object is not used
 class Entities(object):
