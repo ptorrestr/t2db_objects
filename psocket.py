@@ -2,8 +2,8 @@
 import socket
 import time
 
-from objects import parseText
-from objects import encodeObject
+from .objects import parseText
+from .objects import encodeObject
 
 ## Class to control socket communication
 class SocketControl(object):

@@ -1,5 +1,5 @@
 import json
-from utilities import boolean2int
+from .utilities import boolean2int
 #TODO Get automatically data model from webservice
 
 # Return the json representation of the dataObject in string format. If 
