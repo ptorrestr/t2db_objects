@@ -1,131 +1,33 @@
 #!/usr/bin/env python3
+# objects.py tests
 
+import unittest
 import random
 import string
-import unittest
-import _thread as thread
 
-from threading import Semaphore
+from t2db_objects.objects import User
+from t2db_objects.objects import Tweet
+from t2db_objects.objects import Job
+from t2db_objects.objects import Configuration
+from t2db_objects.objects import ObjectList
+from t2db_objects.objects import parseText
+from t2db_objects.objects import encodeObject
+from t2db_objects.objects import formatHash
 
-from objects import User
-from objects import Tweet
-from objects import Job
-from objects import Configuration
-from objects import ObjectList
-from objects import parseText
-from objects import encodeObject
-from objects import formatHash
+from t2db_objects.utilities import readConfigFile
+from t2db_objects.utilities import writeFile
+from t2db_objects.utilities import removeFile
 
-from psocket import SocketServer
-from psocket import SocketClient
-from psocket import SocketControl
+from t2db_objects.tests.common import randomInteger
+from t2db_objects.tests.common import randomBoolean
+from t2db_objects.tests.common import randomStringFixed
+from t2db_objects.tests.common import randomStringVariable
+from t2db_objects.tests.common import randomText
+from t2db_objects.tests.common import randomUrl
+from t2db_objects.tests.common import randomTweet
+from t2db_objects.tests.common import randomUser
+from t2db_objects.tests.common import randomJob
 
-from utilities import readConfigFile
-from utilities import writeFile
-from utilities import removeFile
-
-def randomInteger(maxSize):
-    return random.randint(0, maxSize)
-
-def randomBoolean():
-    if randomInteger(2) == 0:
-        return False
-    return True
-
-def randomStringFixed(size = 10, chars = string.ascii_uppercase + string.ascii_lowercase + string.digits):
-    return ''.join(random.choice(chars) for x in range(size))
-
-def randomStringVariable(maxSize, chars = string.ascii_uppercase + string.ascii_lowercase + string.digits):
-    size = randomInteger(maxSize)
-    return ''.join(random.choice(chars) for x in range(size))
-
-def randomText(maxSizeText, maxSizeWord):
-    text = ''
-    size = randomInteger(maxSizeText)
-    while len(text) < size:
-        word = randomStringVariable(maxSizeWord)
-        text += word + ' '
-    return text[0:size]
-
-def randomUrl(base, extension):
-    text = "http://"
-    text += base
-    text += "/"
-    text += randomStringVariable(20)
-    text += "."
-    text += extension
-    return text
-
-def randomTweet(id_, created_at, user):
-    randomTweet = {}
-    randomTweet['id'] = id_
-    randomTweet['created_at'] = created_at
-    randomTweet['user'] = user
-    # Non-mandatory
-    randomTweet['retweet_count'] = randomInteger(100)
-    randomTweet['text'] = randomText(200, 20)
-    randomTweet['in_reply_to_screen_name'] = randomStringVariable(50)
-    randomTweet['in_reply_to_user_id'] = randomStringVariable(50)
-    randomTweet['in_reply_to_status_id'] = randomStringVariable(50)
-    randomTweet['source'] = randomStringVariable(50)
-    randomTweet['urls'] = randomUrl("twitter.com", "html")
-    randomTweet['user_mentions'] = randomStringVariable(50)
-    randomTweet['hashtags'] = randomText(100,10)
-    randomTweet['geo'] = randomStringVariable(50)
-    randomTweet['place'] = randomStringVariable(50)
-    randomTweet['coordinates'] = randomStringFixed(10)
-    randomTweet['contributors'] = randomStringVariable(50)
-    randomTweet['favorited'] = randomBoolean()
-    randomTweet['truncated'] = randomBoolean()
-    randomTweet['retweeted'] = randomBoolean()
-    return randomTweet
-
-def randomUser(id_, created_at, name):
-    randomUser = {}
-    randomUser['id'] = id_
-    randomUser['created_at'] = created_at
-    randomUser['name'] = name
-    # Non-mandatory
-    randomUser['screen_name'] = randomStringVariable(200)
-    randomUser['location'] = randomStringVariable(200)
-    randomUser['description'] = randomText(200, 15)
-    randomUser['profile_image_url'] = randomUrl("twitter.com", "jpg")
-    randomUser['profile_image_url_https'] = randomUrl("twitter.com", "jpg")
-    randomUser['profile_background_tile'] = randomBoolean()
-    randomUser['profile_background_image_url'] = randomUrl("twitter.com", "jpg")
-    randomUser['profile_background_color'] = randomStringFixed(6)
-    randomUser['profile_sidebar_fill_color'] = randomStringFixed(6)
-    randomUser['profile_sidebar_border_color'] = randomStringFixed(6)
-    randomUser['profile_link_color'] = randomStringFixed(6)
-    randomUser['profile_text_color'] = randomStringFixed(6)
-    randomUser['protected'] = randomBoolean()
-    randomUser['utc_offset'] = randomInteger(100)
-    randomUser['time_zone'] = randomStringFixed(3)
-    randomUser['followers_count'] = randomInteger(100)
-    randomUser['friends_count'] = randomInteger(100)
-    randomUser['statuses_count'] = randomInteger(100)
-    randomUser['favourites_count'] = randomInteger(100)
-    randomUser['url'] = randomUrl("usersite.com", ".html")
-    randomUser['geo_enabled'] = randomBoolean()
-    randomUser['verified'] = randomBoolean()
-    randomUser['lang'] = randomStringFixed(2)
-    randomUser['notifications'] = randomBoolean()
-    randomUser['contributors_enabled'] = randomBoolean()
-    randomUser['listed_count'] = randomInteger(100)
-    return randomUser
-
-def randomJob(command, process_id):
-    randomJob = {}
-    randomJob['command'] = command
-    randomJob['process_id'] = process_id
-    # Non-mandatory
-    randomJob['consumer'] = randomStringFixed(100)
-    randomJob['consumer_sec'] = randomStringFixed(100)
-    randomJob['access'] = randomStringFixed(100)
-    randomJob['access_sec'] = randomStringFixed(100)
-    randomJob['query'] = randomText(100, 10)
-    randomJob['kind'] = randomStringFixed(5)
-    return randomJob
 
 ###############################################################################
 # Test for TWEET object
@@ -392,168 +294,3 @@ class TestParseEncodeMethods(unittest.TestCase):
             for i in range(0, randomElements):
                 self.assertTrue(internalList1[i].equal(internalList2[i]))
 
-###############################################################################
-# Test for SOCKET objects
-#
-###############################################################################
-sharedList = []
-sharedListLock = Semaphore(0)
-
-def sendObject(host, port, objectToSend):
-    sock = SocketClient(host, port).getSocketControl()
-    sock.sendObject(objectToSend)
-    sock.close()
-
-def receiveObject(host,  port):
-    sock = SocketClient(host, port).getSocketControl()
-    objectReceived = sock.recvObject()
-    sharedList.append(objectReceived)
-    sharedListLock.release()
-    sock.close()
-
-def sendData(host, port, data):
-    sock = SocketClient(host, port).getSocketControl()
-    sock.send(data)
-    sock.close()
-
-def receiveData(host, port):
-    sock = SocketClient(host, port).getSocketControl()
-    data = sock.recv()
-    sharedList.append(data)
-    sharedListLock.release()
-    sock.close()
-    
-
-class TestSocketObject(unittest.TestCase):
-    def setUp(self):
-        # Re-start global variables
-        global sharedList
-        global sharedListLock
-        sharedList = []
-        sharedListLock = Semaphore(0)
-        # Start new server
-        self.server = SocketServer(port = 1300, maxConnection = 5)
-
-    # Test TWEET, send and receive
-    def test_sendTweet(self):
-        tweet1 = Tweet(randomTweet(0, "date", 0))
-        thread.start_new_thread(receiveObject, (self.server.getHostName(), 1300,))
-        socketControl = self.server.accept()
-        socketControl.sendObject(tweet1)
-        sharedListLock.acquire()
-        tweet2 = sharedList[0]
-        self.assertTrue(tweet1.equal(tweet2))
-        socketControl.close()
-    
-    def test_receiveTweet(self):
-        tweet1 = Tweet(randomTweet(0, "date", 0))
-        thread.start_new_thread(sendObject, (self.server.getHostName(), 1300, tweet1,))
-        socketControl = self.server.accept()
-        tweet2 = socketControl.recvObject()
-        self.assertTrue(tweet1.equal(tweet2))
-        socketControl.close()
-
-    # Test USER, send and receive
-    def test_sendUser(self):
-        user1 = User(randomUser(0, "date", "user0"))
-        thread.start_new_thread(receiveObject, (self.server.getHostName(), 1300,))
-        socketControl = self.server.accept()
-        socketControl.sendObject(user1)
-        sharedListLock.acquire()
-        user2 = sharedList[0]
-        self.assertTrue(user1.equal(user2))
-        socketControl.close()
-
-    def test_receiveUser(self):
-        user1 = User(randomUser(0, "date", "user0"))
-        thread.start_new_thread(sendObject, (self.server.getHostName(), 1300, user1,))
-        socketControl = self.server.accept()
-        user2 = socketControl.recvObject()
-        self.assertTrue(user1.equal(user2))
-        socketControl.close()
-
-    # Test JOB, send and receive
-    def test_sendJob(self):
-        job1 = Job(randomJob("START", 0))
-        thread.start_new_thread(receiveObject, (self.server.getHostName(), 1300,))
-        socketControl = self.server.accept()
-        socketControl.sendObject(job1)
-        sharedListLock.acquire()
-        job2 = sharedList[0]
-        self.assertTrue(job1.equal(job2))
-        socketControl.close()
-
-    def test_receiveJob(self):
-        job1 = Job(randomJob("START", 0))
-        thread.start_new_thread(sendObject, (self.server.getHostName(), 1300, job1,))
-        socketControl = self.server.accept()
-        job2 = socketControl.recvObject()
-        self.assertTrue(job1.equal(job2))
-        socketControl.close()
-
-    # Test OBJECTLIST, send and receive
-    def test_sendObjectList(self):
-        randomElements = randomInteger(100)
-        objectList1 = ObjectList()
-        for i in range(0, randomElements):
-            element = User(randomUser(i, "date", "user0"))
-            objectList1.append(element)
-
-        thread.start_new_thread(receiveObject, (self.server.getHostName(), 1300,))
-        socketControl = self.server.accept()
-        socketControl.sendObject(objectList1)
-        sharedListLock.acquire()
-        objectList2 = sharedList[0]
-
-        internalList1 = objectList1.getList()
-        internalList2 = objectList2.getList()
-        for i in range(0, randomElements):
-            self.assertTrue(internalList1[i].equal(internalList2[i]) )
-        socketControl.close()
-
-    def test_receiveObjectList(self):
-        randomElements = randomInteger(100)
-        objectList1 = ObjectList()
-        for i in range(0, randomElements):
-            element = User(randomUser(i, "date", "user0"))
-            objectList1.append(element)
-
-        thread.start_new_thread(sendObject, (self.server.getHostName(), 1300, objectList1,))
-        socketControl = self.server.accept()
-        objectList2 = socketControl.recvObject()
-
-        internalList1 = objectList1.getList()
-        internalList2 = objectList2.getList()
-        for i in range(0, randomElements):
-            self.assertTrue(internalList1[i].equal(internalList2[i]) )
-        socketControl.close()
-
-    # Test data size 19Kb (max 32 Tb)
-    def test_sendData(self):
-        for i in range(1, 200):
-            data1 = randomStringFixed(i*100)
-            thread.start_new_thread(receiveData, (self.server.getHostName(), 1300,))
-            socketControl = self.server.accept()
-            socketControl.send(data1)
-            sharedListLock.acquire()
-            data2 = sharedList[i-1]
-            self.assertTrue(len(data1) == len(data2))
-            self.assertTrue(data1 == data2 )
-            socketControl.close()
-
-    def test_recvData(self):
-        for i in range(1, 200):
-            data1 = randomStringFixed(i*100)
-            thread.start_new_thread(sendData, (self.server.getHostName(), 1300, data1,))
-            socketControl = self.server.accept()
-            data2 = socketControl.recv()
-            self.assertTrue(len(data1) == len(data2))
-            self.assertTrue(data1 == data2 )
-            socketControl.close()
-
-    def tearDown(self):
-        #Close server
-        self.server.close()
-
-if __name__ == '__main__':
-    unittest.main()
