@@ -72,6 +72,10 @@ class TestTweetObject(unittest.TestCase):
         self.assertTrue(tweet0.equalHash(hashTweet0))
         self.assertTrue(tweet1.equalHash(hashTweet1))
 
+    def test_tweetWithNone(self):
+        self.rawTweet0["text"] = None
+        tweet0 = Tweet(self.rawTweet0)
+
 ###############################################################################
 # Test for USER object
 #
@@ -115,6 +119,10 @@ class TestUserObject(unittest.TestCase):
         self.assertTrue(user0.equalHash(hashUser0))
         self.assertTrue(user1.equalHash(hashUser1))
 
+    def test_userWithNone(self):
+        self.rawUser0["created_at"] = None
+        user0 = User(self.rawUser0)
+
 ###############################################################################
 # test for JOB object
 #
@@ -153,6 +161,10 @@ class TestJobObject(unittest.TestCase):
         hashJob1 = job1.toHash()
         self.assertTrue(job0.equalHash(hashJob0))
         self.assertTrue(job1.equalHash(hashJob1))
+
+    def test_jobWithNone(self):
+        self.rawJob0["command"] = None
+        job0 = Job(self.rawJob0)
 
 ###############################################################################
 # test for CONFIGURATION object

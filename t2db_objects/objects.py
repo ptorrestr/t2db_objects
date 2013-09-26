@@ -164,14 +164,16 @@ class Object(object):
             if kind_ == "mandatory":
                 if not name_ in rawObject:
                     raise Exception ("RawObject does not have '" + name_ + "'")
-                if type(rawObject[name_]) is not type_:
+                myType = type(rawObject[name_])
+                if myType is not type_ and myType is not type(None):
                     raise Exception ("'"+ name_ + "' must be '" + str(type_) + "'")
                 self.__dict__[name_] = rawObject[name_]
             elif kind_ == "non-mandatory":
                 if not name_ in rawObject:
                     self.__dict__[name_] = None
                 else:
-                    if type(rawObject[name_]) is not type_:
+                    myType = type(rawObject[name_])
+                    if myType is not type_ and myType is not type(None):
                         raise Exception ("'"+ name_ + "' must be '" + str(type_) + "'")
                     self.__dict__[name_] = rawObject[name_]
         self.myFields = objectFields
