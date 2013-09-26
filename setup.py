@@ -16,7 +16,7 @@ setup(
     author = 'Pablo Torres',
     author_email = 'pablo.torres@deri.org',
     license = 'GNU',
-    packages = ['t2db_objects'],
+    packages = ['t2db_objects', 't2db_objects.tests'],
     install_requires = [
     ],
     test_suite = 't2db_objects.tests',
