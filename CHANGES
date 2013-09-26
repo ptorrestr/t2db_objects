@@ -1,0 +1,41 @@
+commit f66dae6a3e4f409b4ae22ba9b53870888d307e38
+Author: Pablo Torres <pablo.torres@deri.org>
+Date:   Thu Sep 26 16:37:41 2013 +0100
+
+    order dictory for python setuptool
+
+commit a3310f2006fd44012184aadb611572128af242b6
+Author: Pablo Torres <pablo.torres@deri.org>
+Date:   Thu Aug 29 14:38:03 2013 +0100
+
+    Change project to python package layout
+
+commit ad64cbd5665ae4e835dd6cc32b92c453c8587c56
+Author: Pablo Torres <pablo.torres@deri.org>
+Date:   Tue Aug 27 13:49:35 2013 +0100
+
+    fixed import mechanism
+
+commit b85ae5d3b0cb3db7cddae272b3939752474e1580
+Author: Pablo Torres <pablo.torres@deri.org>
+Date:   Tue Aug 27 12:08:43 2013 +0100
+
+    add configuration to objects
+
+commit 504176583588200ddacaa520c35c3ee586aa9869
+Author: Pablo Torres <pablo.torres@deri.org>
+Date:   Tue Aug 27 09:55:26 2013 +0100
+
+    new objects and model
+
+commit 62ade95fbbe1155ce98f72c815bd34829c77e5b3
+Author: Pablo Torres <pablo@galvarino>
+Date:   Wed Aug 14 15:47:23 2013 +0100
+
+    initial import
+
+commit 0501e6076ea0adf77d4d5e68a70b896a5aaaa998
+Author: ptorrestr <pablo.torres.t@gmail.com>
+Date:   Wed Aug 14 07:35:17 2013 -0700
+
+    Initial commit
