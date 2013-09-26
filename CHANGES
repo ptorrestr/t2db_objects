@@ -1,3 +1,33 @@
+commit d7ec418c9b85ce58508ec093fcd4a10d3580cbec
+Author: Pablo Torres <pablo.torres@deri.org>
+Date:   Thu Sep 26 18:53:45 2013 +0100
+
+    fix types for Tweet and User object. Now they follow the Twitter API standard
+
+commit e7905c763f7af9bcf1a31abadde4f486665e5670
+Author: Pablo Torres <pablo.torres@deri.org>
+Date:   Thu Sep 26 18:33:16 2013 +0100
+
+    objects support Null-default attributes
+
+commit b7720a0b924acbc0380cf2665e140631be655572
+Author: Pablo Torres <pablo.torres@deri.org>
+Date:   Thu Sep 26 18:13:56 2013 +0100
+
+    change in setup.py
+
+commit f23a1f06e26a1407a1d45d9866ea39cd054bd08f
+Author: Pablo Torres <pablo.torres@deri.org>
+Date:   Thu Sep 26 16:42:36 2013 +0100
+
+    make visable tests package
+
+commit 33b50ca6cc487bb246153270ec48aa318c85a673
+Author: Pablo Torres <pablo.torres@deri.org>
+Date:   Thu Sep 26 16:40:55 2013 +0100
+
+    update CHANGES
+
 commit f66dae6a3e4f409b4ae22ba9b53870888d307e38
 Author: Pablo Torres <pablo.torres@deri.org>
 Date:   Thu Sep 26 16:37:41 2013 +0100
