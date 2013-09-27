@@ -1,3 +1,15 @@
+commit e9d446d83754fa0ab457b2ec0d04babbe31b7467
+Author: Pablo Torres <pablo.torres@deri.org>
+Date:   Fri Sep 27 12:08:07 2013 +0100
+
+    Add TweetSearch and TweetStreaming objects
+
+commit 7e0d8a3ba46a2af10da2c6856f753f8cca553a06
+Author: Pablo Torres <pablo.torres@deri.org>
+Date:   Thu Sep 26 18:54:16 2013 +0100
+
+    update CHANGES file
+
 commit d7ec418c9b85ce58508ec093fcd4a10d3580cbec
 Author: Pablo Torres <pablo.torres@deri.org>
 Date:   Thu Sep 26 18:53:45 2013 +0100
