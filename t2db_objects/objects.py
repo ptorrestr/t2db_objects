@@ -26,6 +26,10 @@ def parseText(dataText):
         return Tweet(rawObject)
     elif rawObject["_type"] == "User":
         return User(rawObject)
+    elif rawObject["_type"] == "TweetStreaming":
+        return TweetStreaming(rawObject)
+    elif rawObject["_type"] == "TweetSearch":
+        return TweetSearch(rawObject)
     elif rawObject["_type"] == "Job":
         return Job(rawObject)
     elif rawObject["_type"] == "ObjectList":
@@ -143,6 +147,18 @@ jobFields = [
         {"name":"access_sec", "kind":"non-mandatory", "type":str},
         {"name":"query", "kind":"non-mandatory", "type":str},
         {"name":"kind", "kind":"non-mandatory", "type":str},
+        ]
+
+# Fields for TweetStreaming
+tweetStreamingFields = [
+        {"name":"tweet", "kind":"mandatory", "type":int},
+        {"name":"streaming", "kind":"mandatory", "type":int},
+        ]
+
+# Fields for TweetSearch
+tweetSearchFields = [
+        {"name":"tweet", "kind":"mandatory", "type":int},
+        {"name":"search", "kind":"mandatory", "type":int},
         ]
 
 class Object(object):
@@ -299,6 +315,49 @@ class Job(Object):
 
     def equalHash(self, rHash):
         return super(Job, self).equalHash(rHash)
+
+class TweetStreaming(Object):
+    # Create a new TweetStreaming Object. If the data is not given for a field, 
+    # a None object is added in the field. Only mandatory data is forced (tweet,
+    # streaming)
+    def __init__(self, rawTweetStreaming):
+        try:
+            super(TweetStreaming, self).__init__(tweetStreamingFields,
+                rawTweetStreaming)
+        except Exception as e:
+            raise Exception("TweetStreaming creation failed: " + str(e))
+
+    def toHash(self):
+        args = super(TweetStreaming, self).toHash()
+        args['_type'] = "TweetStreaming"
+        return args
+
+    def equal(self, rObject):
+        return super(TweetStreaming, self).equal(rObject)
+
+    def equalHash(self, rHash):
+        return super(TweetStreaming, self).equalHash(rHash)
+
+class TweetSearch(Object):
+    # Create a new TweetSearch Object. If the data is not given for a field, 
+    # a None object is added in the field. Only mandatory data is forced (tweet,
+    # search)
+    def __init__(self, rawTweetSearch):
+        try:
+            super(TweetSearch, self).__init__(tweetSearchFields, rawTweetSearch)
+        except Exception as e:
+            raise Exception("TweetSearch creation failed: " + str(e))
+
+    def toHash(self):
+        args = super(TweetSearch, self).toHash()
+        args['_type'] = "TweetSearch"
+        return args
+
+    def equal(self, rObject):
+        return super(TweetSearch, self).equal(rObject)
+
+    def equalHash(self, rHash):
+        return super(TweetSearch, self).equalHash(rHash)
 
 class Configuration(Object):
     # This objects is for the input configuration given by the user through a

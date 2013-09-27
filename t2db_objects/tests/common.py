@@ -45,8 +45,8 @@ def randomTweet(id_, created_at, user):
     randomTweet['retweet_count'] = randomInteger(100)
     randomTweet['text'] = randomText(200, 20)
     randomTweet['in_reply_to_screen_name'] = randomStringVariable(50)
-    randomTweet['in_reply_to_user_id'] = randomStringVariable(50)
-    randomTweet['in_reply_to_status_id'] = randomStringVariable(50)
+    randomTweet['in_reply_to_user_id'] = randomInteger(100)
+    randomTweet['in_reply_to_status_id'] = randomInteger(100)
     randomTweet['source'] = randomStringVariable(50)
     randomTweet['urls'] = randomUrl("twitter.com", "html")
     randomTweet['user_mentions'] = randomStringVariable(50)
@@ -106,3 +106,15 @@ def randomJob(command, process_id):
     randomJob['query'] = randomText(100, 10)
     randomJob['kind'] = randomStringFixed(5)
     return randomJob
+
+def randomTweetStreaming(tweet, streaming):
+    randomTweetStreaming = {}
+    randomTweetStreaming['tweet'] = tweet
+    randomTweetStreaming['streaming'] = streaming
+    return randomTweetStreaming
+
+def randomTweetSearch(tweet, search):
+    randomTweetSearch = {}
+    randomTweetSearch['tweet'] = tweet
+    randomTweetSearch['search'] = search
+    return randomTweetSearch

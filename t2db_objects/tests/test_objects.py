@@ -8,6 +8,8 @@ import string
 from t2db_objects.objects import User
 from t2db_objects.objects import Tweet
 from t2db_objects.objects import Job
+from t2db_objects.objects import TweetStreaming
+from t2db_objects.objects import TweetSearch
 from t2db_objects.objects import Configuration
 from t2db_objects.objects import ObjectList
 from t2db_objects.objects import parseText
@@ -27,6 +29,8 @@ from t2db_objects.tests.common import randomUrl
 from t2db_objects.tests.common import randomTweet
 from t2db_objects.tests.common import randomUser
 from t2db_objects.tests.common import randomJob
+from t2db_objects.tests.common import randomTweetStreaming
+from t2db_objects.tests.common import randomTweetSearch
 
 
 ###############################################################################
@@ -167,6 +171,92 @@ class TestJobObject(unittest.TestCase):
         job0 = Job(self.rawJob0)
 
 ###############################################################################
+# test for TweetStreaming object
+#
+###############################################################################
+class TestTweetStreamingObject(unittest.TestCase):
+    def setUp(self):
+        self.rawTweetStreaming0 = randomTweetStreaming(0, 0)
+        self.rawTweetStreaming1 = randomTweetStreaming(1, 1)
+        #Invalid TweetStreaming, no tweet
+        self.rawTweetStreaming2 = randomTweetStreaming(2, 2)
+        del self.rawTweetStreaming2["tweet"]
+        #Invalid TweetStreaming, no streaming
+        self.rawTweetStreaming3 = randomTweetStreaming(3, 3)
+        del self.rawTweetStreaming3["streaming"]
+
+    def test_tweetStreamingCreationValid(self):
+        tweetStreaming0 = TweetStreaming(self.rawTweetStreaming0)
+        tweetStreaming1 = TweetStreaming(self.rawTweetStreaming1)
+        self.assertTrue(tweetStreaming0.equalHash(self.rawTweetStreaming0))
+        self.assertTrue(tweetStreaming1.equalHash(self.rawTweetStreaming1))
+
+    def test_tweetStreamingEqual(self):
+        tweetStreaming0 = TweetStreaming(self.rawTweetStreaming0)
+        tweetStreaming1 = TweetStreaming(self.rawTweetStreaming1)
+        self.assertTrue(tweetStreaming0.equal(tweetStreaming0))
+        self.assertFalse(tweetStreaming0.equal(tweetStreaming1))
+
+    def test_tweetStreamingCreationInvalid(self):
+        self.assertRaises(Exception, TweetStreaming, self.rawTweetStreaming2)
+        self.assertRaises(Exception, TweetStreaming, self.rawTweetStreaming3)
+
+    def test_tweetStreamingToHash(self):
+        tweetStreaming0 = TweetStreaming(self.rawTweetStreaming0)
+        tweetStreaming1 = TweetStreaming(self.rawTweetStreaming1)
+        hashTweetStreaming0 = tweetStreaming0.toHash()
+        hashTweetStreaming1 = tweetStreaming1.toHash()
+        self.assertTrue(tweetStreaming0.equalHash(hashTweetStreaming0))
+        self.assertTrue(tweetStreaming1.equalHash(hashTweetStreaming1))
+
+    def test_TweetStreamingWithNone(self):
+        self.rawTweetStreaming0["command"] = None
+        tweetStreaming0 = TweetStreaming(self.rawTweetStreaming0)
+
+###############################################################################
+# test for TweetSearch object
+#
+###############################################################################
+class TestTweetSearchObject(unittest.TestCase):
+    def setUp(self):
+        self.rawTweetSearch0 = randomTweetSearch(0, 0)
+        self.rawTweetSearch1 = randomTweetSearch(1, 1)
+        #Invalid TweetSearch, no tweet
+        self.rawTweetSearch2 = randomTweetSearch(2, 2)
+        del self.rawTweetSearch2["tweet"]
+        #Invalid TweetSearch, no search
+        self.rawTweetSearch3 = randomTweetSearch(3, 3)
+        del self.rawTweetSearch3["search"]
+
+    def test_tweetSearchCreationValid(self):
+        tweetSearch0 = TweetSearch(self.rawTweetSearch0)
+        tweetSearch1 = TweetSearch(self.rawTweetSearch1)
+        self.assertTrue(tweetSearch0.equalHash(self.rawTweetSearch0))
+        self.assertTrue(tweetSearch1.equalHash(self.rawTweetSearch1))
+
+    def test_tweetSearchEqual(self):
+        tweetSearch0 = TweetSearch(self.rawTweetSearch0)
+        tweetSearch1 = TweetSearch(self.rawTweetSearch1)
+        self.assertTrue(tweetSearch0.equal(tweetSearch0))
+        self.assertFalse(tweetSearch0.equal(tweetSearch1))
+
+    def test_tweetSearchCreationInvalid(self):
+        self.assertRaises(Exception, TweetSearch, self.rawTweetSearch2)
+        self.assertRaises(Exception, TweetSearch, self.rawTweetSearch3)
+
+    def test_tweetSearchToHash(self):
+        tweetSearch0 = TweetSearch(self.rawTweetSearch0)
+        tweetSearch1 = TweetSearch(self.rawTweetSearch1)
+        hashTweetSearch0 = tweetSearch0.toHash()
+        hashTweetSearch1 = tweetSearch1.toHash()
+        self.assertTrue(tweetSearch0.equalHash(hashTweetSearch0))
+        self.assertTrue(tweetSearch1.equalHash(hashTweetSearch1))
+
+    def test_tweetSearchWithNone(self):
+        self.rawTweetSearch0["command"] = None
+        tweetSearch0 = TweetSearch(self.rawTweetSearch0)
+
+###############################################################################
 # test for CONFIGURATION object
 #
 ###############################################################################
@@ -282,6 +372,22 @@ class TestParseEncodeMethods(unittest.TestCase):
             encodeUser1 = encodeObject(user1)
             user2 = parseText(encodeUser1)
             self.assertTrue(user1.equal(user2))
+
+    def test_parseEncodeTweetStreaming(self):
+        randomElements = randomInteger(100)
+        for i in range(0, randomElements):
+            tweetStreaming1 = TweetStreaming(randomTweetStreaming(i,i))
+            encodeTweetStreaming1 = encodeObject(tweetStreaming1)
+            tweetStreaming2 = parseText(encodeTweetStreaming1)
+            self.assertTrue(tweetStreaming1.equal(tweetStreaming2))
+
+    def test_parseEncodeTweetSearch(self):
+        randomElements = randomInteger(100)
+        for i in range(0, randomElements):
+            tweetSearch1 = TweetSearch(randomTweetSearch(i,i))
+            encodeTweetSearch1 = encodeObject(tweetSearch1)
+            tweetSearch2 = parseText(encodeTweetSearch1)
+            self.assertTrue(tweetSearch1.equal(tweetSearch2))
 
     def test_parseEncodeJob(self):
         randomElements = randomInteger(100)
