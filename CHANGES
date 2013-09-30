@@ -1,3 +1,15 @@
+commit 81bbca0be160c5d04dea981d57cd7ecf513bef26
+Author: Pablo Torres <pablo.torres@deri.org>
+Date:   Mon Sep 30 18:22:26 2013 +0100
+
+    new feature: Support for timeout psockets
+
+commit e63e359e08476fda35a888c65a06b6782a2f55bb
+Author: Pablo Torres <pablo.torres@deri.org>
+Date:   Mon Sep 30 14:54:32 2013 +0100
+
+    update CHANGES file
+
 commit a01862ec0ba7ee4fd12701b2530e8f1167cc6915
 Author: Pablo Torres <pablo.torres@deri.org>
 Date:   Mon Sep 30 14:53:50 2013 +0100
