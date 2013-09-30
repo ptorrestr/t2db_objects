@@ -75,6 +75,10 @@ class ObjectList(object):
                 self.list.append(User(hashElement))
             elif type_ == "Tweet":
                 self.list.append(Tweet(hashElement))
+            elif type_ == "TweetStreaming":
+                self.list.append(TweetStreaming(hashElement))
+            elif type_ == "TweetSearch":
+                self.list.append(TweetSearch(hashElement))
             elif type_ == "Job":
                 self.list.append(Job(hashElement))
             else:

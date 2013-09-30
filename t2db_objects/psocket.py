@@ -32,6 +32,8 @@ class SocketControl(object):
             end = begin + chunk
             sent2 = self.sock.send(msgBytes[begin:end])
             begin += chunk
+        # Force synchronisation
+        recv2 = self.sock.recv(2)
 
     def recvObject(self):
         msg = self.recv()
@@ -48,6 +50,8 @@ class SocketControl(object):
         msgBytes = bytearray()
         for i in range(0, numberChunks):
             msgBytes += self.sock.recv(chunk)
+        # Force synchronisation
+        sent2 = self.sock.send(bytes(confirmation, strEncoding))
         return msgBytes.decode(strEncoding)
         
 

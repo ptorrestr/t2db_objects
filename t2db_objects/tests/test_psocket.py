@@ -7,6 +7,8 @@ from threading import Semaphore
 
 from t2db_objects.objects import User
 from t2db_objects.objects import Tweet
+from t2db_objects.objects import TweetStreaming
+from t2db_objects.objects import TweetSearch
 from t2db_objects.objects import Job
 from t2db_objects.objects import Configuration
 from t2db_objects.objects import ObjectList
@@ -26,7 +28,10 @@ from t2db_objects.tests.common import randomText
 from t2db_objects.tests.common import randomUrl
 from t2db_objects.tests.common import randomTweet
 from t2db_objects.tests.common import randomUser
+from t2db_objects.tests.common import randomTweetStreaming
+from t2db_objects.tests.common import randomTweetSearch
 from t2db_objects.tests.common import randomJob
+
 
 ###############################################################################
 # Test for SOCKET objects
@@ -47,6 +52,19 @@ def receiveObject(host,  port):
     sharedListLock.release()
     sock.close()
 
+def receiveObjectMany(host, port):
+    sock = SocketClient(host, port).getSocketControl()
+    data1 = sock.recvObject()
+    data2 = sock.recvObject()
+    data3 = sock.recvObject()
+    data4 = sock.recvObject()
+    sharedList.append(data1)
+    sharedList.append(data2)
+    sharedList.append(data3)
+    sharedList.append(data4)
+    sharedListLock.release()
+    sock.close()
+
 def sendData(host, port, data):
     sock = SocketClient(host, port).getSocketControl()
     sock.send(data)
@@ -58,7 +76,19 @@ def receiveData(host, port):
     sharedList.append(data)
     sharedListLock.release()
     sock.close()
-    
+
+def receiveDataMany(host, port):
+    sock = SocketClient(host, port).getSocketControl()
+    data1 = sock.recv()
+    data2 = sock.recv()
+    data3 = sock.recv()
+    data4 = sock.recv()
+    sharedList.append(data1)
+    sharedList.append(data2)
+    sharedList.append(data3)
+    sharedList.append(data4)
+    sharedListLock.release()
+    sock.close()    
 
 class TestSocketObject(unittest.TestCase):
     def setUp(self):
@@ -134,13 +164,11 @@ class TestSocketObject(unittest.TestCase):
         for i in range(0, randomElements):
             element = User(randomUser(i, "date", "user0"))
             objectList1.append(element)
-
         thread.start_new_thread(receiveObject, (self.server.getHostName(), 1300,))
         socketControl = self.server.accept()
         socketControl.sendObject(objectList1)
         sharedListLock.acquire()
         objectList2 = sharedList[0]
-
         internalList1 = objectList1.getList()
         internalList2 = objectList2.getList()
         for i in range(0, randomElements):
@@ -153,15 +181,75 @@ class TestSocketObject(unittest.TestCase):
         for i in range(0, randomElements):
             element = User(randomUser(i, "date", "user0"))
             objectList1.append(element)
-
         thread.start_new_thread(sendObject, (self.server.getHostName(), 1300, objectList1,))
         socketControl = self.server.accept()
         objectList2 = socketControl.recvObject()
-
         internalList1 = objectList1.getList()
         internalList2 = objectList2.getList()
         for i in range(0, randomElements):
             self.assertTrue(internalList1[i].equal(internalList2[i]) )
+        socketControl.close()
+
+    # Send data with different charsets
+    def test_sendObjectListCharset(self):
+        randomElements = 1000#randomInteger(100)
+        objectList1 = ObjectList()
+        for i in range(0, randomElements):
+            element = User(randomUser(i, "áßðáßð213l21h", "œƒð©þ¥ú¥"))
+            objectList1.append(element)        
+        thread.start_new_thread(receiveObject, (self.server.getHostName(), 1300,))
+        socketControl = self.server.accept()
+        socketControl.sendObject(objectList1)
+        sharedListLock.acquire()
+        objectList2 = sharedList[0]
+        internalList1 = objectList1.getList()
+        internalList2 = objectList2.getList()
+        for i in range(0, randomElements):
+            self.assertTrue(internalList1[i].equal(internalList2[i]) )
+        socketControl.close()
+
+    def test_sendObjectListMany(self):
+        randomElements = 100
+        objectList1 = ObjectList()
+        for i in range(0, randomElements):
+            element = Tweet(randomTweet(i, "date", i))
+            objectList1.append(element)
+        objectList2 = ObjectList()
+        for i in range(0, randomElements):
+            element = User(randomUser(i, "áßðáßð213l21h", "œƒð©þ¥ú¥"))
+            objectList2.append(element)
+        objectList3 = ObjectList()
+        for i in range(0, randomElements):
+            element = TweetStreaming(randomTweetStreaming(i, i))
+            objectList3.append(element)
+        objectList4 = ObjectList()
+        for i in range(0, randomElements):
+            element = TweetSearch(randomTweetSearch(i, i))
+            objectList4.append(element)
+        thread.start_new_thread(receiveObjectMany,
+            (self.server.getHostName(), 1300,))
+        socketControl = self.server.accept()
+        socketControl.sendObject(objectList1)
+        socketControl.sendObject(objectList2)
+        socketControl.sendObject(objectList3)
+        socketControl.sendObject(objectList4)
+        sharedListLock.acquire()
+        objectList21 = sharedList[0]
+        objectList22 = sharedList[1]
+        objectList23 = sharedList[2]
+        objectList24 = sharedList[3]
+        internalList11 = objectList1.getList()
+        internalList12 = objectList2.getList()
+        internalList13 = objectList3.getList()
+        internalList14 = objectList4.getList()
+        internalList21 = objectList21.getList()
+        internalList22 = objectList22.getList()
+        internalList23 = objectList23.getList()
+        internalList24 = objectList24.getList()
+        self.assertTrue(internalList11[i].equal(internalList21[i]) )
+        self.assertTrue(internalList12[i].equal(internalList22[i]) )
+        self.assertTrue(internalList13[i].equal(internalList23[i]) )
+        self.assertTrue(internalList14[i].equal(internalList24[i]) )
         socketControl.close()
 
     # Test data size 19Kb (max 32 Tb)
@@ -186,6 +274,28 @@ class TestSocketObject(unittest.TestCase):
             self.assertTrue(len(data1) == len(data2))
             self.assertTrue(data1 == data2 )
             socketControl.close()
+    
+    def test_sendDataMany(self):
+        data1 = randomStringFixed(100)
+        data2 = randomStringFixed(100)
+        data3 = randomStringFixed(100)
+        data4 = randomStringFixed(100)
+        thread.start_new_thread(receiveDataMany, (self.server.getHostName(), 1300,))
+        socketControl = self.server.accept()
+        socketControl.send(data1)
+        socketControl.send(data2)
+        socketControl.send(data3)
+        socketControl.send(data4)
+        sharedListLock.acquire()
+        data21 = sharedList[0]
+        data22 = sharedList[1]
+        data23 = sharedList[2]
+        data24 = sharedList[3]
+        self.assertEqual(len(data1), len(data21))
+        self.assertEqual(len(data2), len(data22))
+        self.assertEqual(len(data3), len(data23))
+        self.assertEqual(len(data4), len(data24))
+        socketControl.close()
 
     def tearDown(self):
         #Close server
