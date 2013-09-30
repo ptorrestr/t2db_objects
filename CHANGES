@@ -1,3 +1,15 @@
+commit 79386af942f024f41caf7391ce7527cef216f073
+Author: Pablo Torres <pablo.torres@deri.org>
+Date:   Mon Sep 30 12:40:10 2013 +0100
+
+    Fixed bug: When many data is sent and received in sucessively calls, their results were merged in the same buffer. Add a simple but costly mechanism of synchronisation to avoid the bug. \n Fixed bug: New objects added as part of collection  objects for certain methods (toHash, ObjectList, etc)
+
+commit 91ad2bdfdbc4b5b3b4377f4b0e9b0ed55202e42c
+Author: Pablo Torres <pablo.torres@deri.org>
+Date:   Fri Sep 27 12:09:20 2013 +0100
+
+    update CHANGES file
+
 commit 8d41184a9bffdb40120cfc25f41d2fad30e49247
 Author: Pablo Torres <pablo.torres@deri.org>
 Date:   Fri Sep 27 12:08:27 2013 +0100
