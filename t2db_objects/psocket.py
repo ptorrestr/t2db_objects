@@ -68,6 +68,9 @@ class SocketServer(object):
         self.sockserver.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.sockserver.bind((socket.gethostname(), port))
         self.sockserver.listen(maxConnection)
+
+    def setTimeout(self, timeout):
+        self.sockserver.settimeout(timeout)
         
     # Wait for incoming connections. Return the SocketControl for communcation.
     def accept(self):

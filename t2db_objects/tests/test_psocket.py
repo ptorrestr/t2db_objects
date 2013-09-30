@@ -1,7 +1,5 @@
-#!/usr/bin/env python3
-# psocket.py tests
-
 import unittest
+import time
 import _thread as thread
 from threading import Semaphore
 
@@ -98,12 +96,12 @@ class TestSocketObject(unittest.TestCase):
         sharedList = []
         sharedListLock = Semaphore(0)
         # Start new server
-        self.server = SocketServer(port = 1300, maxConnection = 5)
+        self.server = SocketServer(port = 13000, maxConnection = 5)
 
     # Test TWEET, send and receive
     def test_sendTweet(self):
         tweet1 = Tweet(randomTweet(0, "date", 0))
-        thread.start_new_thread(receiveObject, (self.server.getHostName(), 1300,))
+        thread.start_new_thread(receiveObject, (self.server.getHostName(), 13000,))
         socketControl = self.server.accept()
         socketControl.sendObject(tweet1)
         sharedListLock.acquire()
@@ -113,7 +111,7 @@ class TestSocketObject(unittest.TestCase):
     
     def test_receiveTweet(self):
         tweet1 = Tweet(randomTweet(0, "date", 0))
-        thread.start_new_thread(sendObject, (self.server.getHostName(), 1300, tweet1,))
+        thread.start_new_thread(sendObject, (self.server.getHostName(), 13000, tweet1,))
         socketControl = self.server.accept()
         tweet2 = socketControl.recvObject()
         self.assertTrue(tweet1.equal(tweet2))
@@ -122,7 +120,7 @@ class TestSocketObject(unittest.TestCase):
     # Test USER, send and receive
     def test_sendUser(self):
         user1 = User(randomUser(0, "date", "user0"))
-        thread.start_new_thread(receiveObject, (self.server.getHostName(), 1300,))
+        thread.start_new_thread(receiveObject, (self.server.getHostName(), 13000,))
         socketControl = self.server.accept()
         socketControl.sendObject(user1)
         sharedListLock.acquire()
@@ -132,7 +130,7 @@ class TestSocketObject(unittest.TestCase):
 
     def test_receiveUser(self):
         user1 = User(randomUser(0, "date", "user0"))
-        thread.start_new_thread(sendObject, (self.server.getHostName(), 1300, user1,))
+        thread.start_new_thread(sendObject, (self.server.getHostName(), 13000, user1,))
         socketControl = self.server.accept()
         user2 = socketControl.recvObject()
         self.assertTrue(user1.equal(user2))
@@ -141,7 +139,7 @@ class TestSocketObject(unittest.TestCase):
     # Test JOB, send and receive
     def test_sendJob(self):
         job1 = Job(randomJob("START", 0))
-        thread.start_new_thread(receiveObject, (self.server.getHostName(), 1300,))
+        thread.start_new_thread(receiveObject, (self.server.getHostName(), 13000,))
         socketControl = self.server.accept()
         socketControl.sendObject(job1)
         sharedListLock.acquire()
@@ -151,7 +149,7 @@ class TestSocketObject(unittest.TestCase):
 
     def test_receiveJob(self):
         job1 = Job(randomJob("START", 0))
-        thread.start_new_thread(sendObject, (self.server.getHostName(), 1300, job1,))
+        thread.start_new_thread(sendObject, (self.server.getHostName(), 13000, job1,))
         socketControl = self.server.accept()
         job2 = socketControl.recvObject()
         self.assertTrue(job1.equal(job2))
@@ -164,7 +162,7 @@ class TestSocketObject(unittest.TestCase):
         for i in range(0, randomElements):
             element = User(randomUser(i, "date", "user0"))
             objectList1.append(element)
-        thread.start_new_thread(receiveObject, (self.server.getHostName(), 1300,))
+        thread.start_new_thread(receiveObject, (self.server.getHostName(), 13000,))
         socketControl = self.server.accept()
         socketControl.sendObject(objectList1)
         sharedListLock.acquire()
@@ -181,7 +179,7 @@ class TestSocketObject(unittest.TestCase):
         for i in range(0, randomElements):
             element = User(randomUser(i, "date", "user0"))
             objectList1.append(element)
-        thread.start_new_thread(sendObject, (self.server.getHostName(), 1300, objectList1,))
+        thread.start_new_thread(sendObject, (self.server.getHostName(), 13000, objectList1,))
         socketControl = self.server.accept()
         objectList2 = socketControl.recvObject()
         internalList1 = objectList1.getList()
@@ -197,7 +195,7 @@ class TestSocketObject(unittest.TestCase):
         for i in range(0, randomElements):
             element = User(randomUser(i, "áßðáßð213l21h", "œƒð©þ¥ú¥"))
             objectList1.append(element)        
-        thread.start_new_thread(receiveObject, (self.server.getHostName(), 1300,))
+        thread.start_new_thread(receiveObject, (self.server.getHostName(), 13000,))
         socketControl = self.server.accept()
         socketControl.sendObject(objectList1)
         sharedListLock.acquire()
@@ -227,7 +225,7 @@ class TestSocketObject(unittest.TestCase):
             element = TweetSearch(randomTweetSearch(i, i))
             objectList4.append(element)
         thread.start_new_thread(receiveObjectMany,
-            (self.server.getHostName(), 1300,))
+            (self.server.getHostName(), 13000,))
         socketControl = self.server.accept()
         socketControl.sendObject(objectList1)
         socketControl.sendObject(objectList2)
@@ -256,7 +254,7 @@ class TestSocketObject(unittest.TestCase):
     def test_sendData(self):
         for i in range(1, 200):
             data1 = randomStringFixed(i*100)
-            thread.start_new_thread(receiveData, (self.server.getHostName(), 1300,))
+            thread.start_new_thread(receiveData, (self.server.getHostName(), 13000,))
             socketControl = self.server.accept()
             socketControl.send(data1)
             sharedListLock.acquire()
@@ -268,7 +266,7 @@ class TestSocketObject(unittest.TestCase):
     def test_recvData(self):
         for i in range(1, 200):
             data1 = randomStringFixed(i*100)
-            thread.start_new_thread(sendData, (self.server.getHostName(), 1300, data1,))
+            thread.start_new_thread(sendData, (self.server.getHostName(), 13000, data1,))
             socketControl = self.server.accept()
             data2 = socketControl.recv()
             self.assertTrue(len(data1) == len(data2))
@@ -280,7 +278,7 @@ class TestSocketObject(unittest.TestCase):
         data2 = randomStringFixed(100)
         data3 = randomStringFixed(100)
         data4 = randomStringFixed(100)
-        thread.start_new_thread(receiveDataMany, (self.server.getHostName(), 1300,))
+        thread.start_new_thread(receiveDataMany, (self.server.getHostName(), 13000,))
         socketControl = self.server.accept()
         socketControl.send(data1)
         socketControl.send(data2)
@@ -295,6 +293,51 @@ class TestSocketObject(unittest.TestCase):
         self.assertEqual(len(data2), len(data22))
         self.assertEqual(len(data3), len(data23))
         self.assertEqual(len(data4), len(data24))
+        socketControl.close()
+
+    def tearDown(self):
+        #Close server
+        self.server.close()
+
+class TestSocketTimeout(unittest.TestCase):
+    def setUp(self):
+        # Re-start global variables
+        global sharedList
+        global sharedListLock
+        sharedList = []
+        sharedListLock = Semaphore(0)
+        # Start new server
+        self.server = SocketServer(port = 13001, maxConnection = 5)
+        self.server.setTimeout(5)
+
+    def test_nonBlockingAccept(self):
+        timeStart = time.time()
+        # wait for connections
+        # No connection received, stop in 5 sec, generate exception.
+        self.assertRaises(Exception, self.server.accept)
+
+    def test_blockingRecv(self):
+        data1 = randomStringFixed(100)
+        thread.start_new_thread(sendData, (self.server.getHostName(), 13001, data1,))
+        socketControl = self.server.accept()
+        self.server.setTimeout(None)
+        time.sleep(5)
+        data2 = socketControl.recv()
+        self.assertTrue(len(data1) == len(data2))
+        self.assertTrue(data1 == data2 )
+        socketControl.close()
+
+    def test_blockingSend(self):
+        data1 = randomStringFixed(100)
+        thread.start_new_thread(receiveData, (self.server.getHostName(), 13001,))
+        socketControl = self.server.accept()
+        self.server.setTimeout(None)
+        time.sleep(5)
+        socketControl.send(data1)
+        sharedListLock.acquire()
+        data2 = sharedList[0]
+        self.assertTrue(len(data1) == len(data2))
+        self.assertTrue(data1 == data2 )
         socketControl.close()
 
     def tearDown(self):
