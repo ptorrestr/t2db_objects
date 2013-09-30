@@ -1,3 +1,15 @@
+commit a01862ec0ba7ee4fd12701b2530e8f1167cc6915
+Author: Pablo Torres <pablo.torres@deri.org>
+Date:   Mon Sep 30 14:53:50 2013 +0100
+
+    new version 0.5: Added Daemon object which allows to daemonise other object just extending the declaration
+
+commit 471da166fd6f7e4ac223e942a35f331435a7f9e6
+Author: Pablo Torres <pablo.torres@deri.org>
+Date:   Mon Sep 30 12:41:11 2013 +0100
+
+    update CHANGES, new version 0.4.2
+
 commit 79386af942f024f41caf7391ce7527cef216f073
 Author: Pablo Torres <pablo.torres@deri.org>
 Date:   Mon Sep 30 12:40:10 2013 +0100
