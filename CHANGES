@@ -1,3 +1,15 @@
+commit 94943c485f708f92f7fd9cb8d169497117b2ee59
+Author: Pablo Torres <pablo.torres@deri.org>
+Date:   Thu Oct 3 17:02:20 2013 +0100
+
+    fix some bugs. Added new functions in common for randomise
+
+commit d0d18f19cc1d55c7b6e71ceabdc2df04cea569e2
+Author: Pablo Torres <pablo.torres@deri.org>
+Date:   Mon Sep 30 18:22:54 2013 +0100
+
+    update CHANGES
+
 commit 81bbca0be160c5d04dea981d57cd7ecf513bef26
 Author: Pablo Torres <pablo.torres@deri.org>
 Date:   Mon Sep 30 18:22:26 2013 +0100
