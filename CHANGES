@@ -1,3 +1,15 @@
+commit 461511ba80c3d578e2f95e221646f999a4a0ea96
+Author: Pablo Torres <pablo.torres@deri.org>
+Date:   Thu Oct 3 17:45:05 2013 +0100
+
+    new objects: Search, Streaming added
+
+commit 0c6bbfec5f0e711c57228c1a4ab62eae2dbb47e3
+Author: Pablo Torres <pablo.torres@deri.org>
+Date:   Thu Oct 3 17:19:40 2013 +0100
+
+    update CHANGES file
+
 commit 94943c485f708f92f7fd9cb8d169497117b2ee59
 Author: Pablo Torres <pablo.torres@deri.org>
 Date:   Thu Oct 3 17:02:20 2013 +0100
