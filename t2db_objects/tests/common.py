@@ -7,6 +7,9 @@ import string
 def randomInteger(maxSize):
     return random.randint(0, maxSize)
 
+def randomIntegerRange(minSize, maxSize):
+    return random.randint(minSize, maxSize)
+
 def randomBoolean():
     if randomInteger(2) == 0:
         return False
@@ -21,7 +24,7 @@ def randomStringVariable(maxSize, chars = string.ascii_uppercase + string.ascii_
 
 def randomText(maxSizeText, maxSizeWord):
     text = ''
-    size = randomInteger(maxSizeText)
+    size = randomIntegerRange(1, maxSizeText)
     while len(text) < size:
         word = randomStringVariable(maxSizeWord)
         text += word + ' '

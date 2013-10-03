@@ -321,7 +321,7 @@ class TestSocketTimeout(unittest.TestCase):
         thread.start_new_thread(sendData, (self.server.getHostName(), 13001, data1,))
         socketControl = self.server.accept()
         self.server.setTimeout(None)
-        time.sleep(5)
+        #time.sleep(5)
         data2 = socketControl.recv()
         self.assertTrue(len(data1) == len(data2))
         self.assertTrue(data1 == data2 )
@@ -332,7 +332,7 @@ class TestSocketTimeout(unittest.TestCase):
         thread.start_new_thread(receiveData, (self.server.getHostName(), 13001,))
         socketControl = self.server.accept()
         self.server.setTimeout(None)
-        time.sleep(5)
+        #time.sleep(5)
         socketControl.send(data1)
         sharedListLock.acquire()
         data2 = sharedList[0]
