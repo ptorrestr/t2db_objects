@@ -121,3 +121,23 @@ def randomTweetSearch(tweet, search):
     randomTweetSearch['tweet'] = tweet
     randomTweetSearch['search'] = search
     return randomTweetSearch
+
+def randomStreaming(id_):
+    randomStreaming = {}
+    randomStreaming["id"] = id_
+    randomStreaming["query"] = randomText(100, 10)
+    randomStreaming['consumer'] = randomStringFixed(100)
+    randomStreaming['consumer_secret'] = randomStringFixed(100)
+    randomStreaming['access'] = randomStringFixed(100)
+    randomStreaming['access_secret'] = randomStringFixed(100)
+    return randomStreaming
+
+def randomSearch(id_):
+    randomSearch = {}
+    randomSearch["id"] = id_
+    randomSearch["query"] = randomText(100, 10)
+    randomSearch['consumer'] = randomStringFixed(100)
+    randomSearch['consumer_secret'] = randomStringFixed(100)
+    randomSearch['access'] = randomStringFixed(100)
+    randomSearch['access_secret'] = randomStringFixed(100)
+    return randomSearch

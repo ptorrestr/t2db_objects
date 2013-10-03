@@ -30,6 +30,10 @@ def parseText(dataText):
         return TweetStreaming(rawObject)
     elif rawObject["_type"] == "TweetSearch":
         return TweetSearch(rawObject)
+    elif rawObject["_type"] == "Streaming":
+        return Streaming(rawObject)
+    elif rawObject["_type"] == "Search":
+        return Search(rawObject)
     elif rawObject["_type"] == "Job":
         return Job(rawObject)
     elif rawObject["_type"] == "ObjectList":
@@ -79,6 +83,10 @@ class ObjectList(object):
                 self.list.append(TweetStreaming(hashElement))
             elif type_ == "TweetSearch":
                 self.list.append(TweetSearch(hashElement))
+            elif type_ == "Streaming":
+                self.list.append(Streaming(hashElement))
+            elif type_ == "Search":
+                self.list.append(Search(hashElement))
             elif type_ == "Job":
                 self.list.append(Job(hashElement))
             else:
@@ -163,6 +171,26 @@ tweetStreamingFields = [
 tweetSearchFields = [
         {"name":"tweet", "kind":"mandatory", "type":int},
         {"name":"search", "kind":"mandatory", "type":int},
+        ]
+
+# Fields for Streaming
+streamingFields = [
+        {"name":"id", "kind":"mandatory", "type":int},
+        {"name":"query", "kind":"mandatory", "type":str},
+        {"name":"consumer", "kind":"mandatory", "type":str},
+        {"name":"consumer_secret", "kind":"mandatory", "type":str},
+        {"name":"access", "kind":"mandatory", "type":str},
+        {"name":"access_secret", "kind":"mandatory", "type":str},
+        ]
+
+# Fields for Search
+searchFields = [
+        {"name":"id", "kind":"mandatory", "type":int},
+        {"name":"query", "kind":"mandatory", "type":str},
+        {"name":"consumer", "kind":"mandatory", "type":str},
+        {"name":"consumer_secret", "kind":"mandatory", "type":str},
+        {"name":"access", "kind":"mandatory", "type":str},
+        {"name":"access_secret", "kind":"mandatory", "type":str},
         ]
 
 class Object(object):
@@ -362,6 +390,46 @@ class TweetSearch(Object):
 
     def equalHash(self, rHash):
         return super(TweetSearch, self).equalHash(rHash)
+
+class Streaming(Object):
+    # Create a new Streaming Object. If the data is not given for a field, 
+    # a None object is added in the field. Only mandatory data is forced (all)
+    def __init__(self, rawStreaming):
+        try:
+            super(Streaming, self).__init__(streamingFields, rawStreaming)
+        except Exception as e:
+            raise Exception("Streaming creation failed: " + str(e))
+
+    def toHash(self):
+        args = super(Streaming, self).toHash()
+        args['_type'] = "Streaming"
+        return args
+
+    def equal(self, rObject):
+        return super(Streaming, self).equal(rObject)
+
+    def equalHash(self, rHash):
+        return super(Streaming, self).equalHash(rHash)
+
+class Search(Object):
+    # Create a new Search Object. If the data is not given for a field, 
+    # a None object is added in the field. Only mandatory data is forced (all)
+    def __init__(self, rawSearch):
+        try:
+            super(Search, self).__init__(searchFields, rawSearch)
+        except Exception as e:
+            raise Exception("Search creation failed: " + str(e))
+
+    def toHash(self):
+        args = super(Search, self).toHash()
+        args['_type'] = "Search"
+        return args
+
+    def equal(self, rObject):
+        return super(Search, self).equal(rObject)
+
+    def equalHash(self, rHash):
+        return super(Search, self).equalHash(rHash)
 
 class Configuration(Object):
     # This objects is for the input configuration given by the user through a

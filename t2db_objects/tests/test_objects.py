@@ -10,6 +10,8 @@ from t2db_objects.objects import Tweet
 from t2db_objects.objects import Job
 from t2db_objects.objects import TweetStreaming
 from t2db_objects.objects import TweetSearch
+from t2db_objects.objects import Streaming
+from t2db_objects.objects import Search
 from t2db_objects.objects import Configuration
 from t2db_objects.objects import ObjectList
 from t2db_objects.objects import parseText
@@ -31,7 +33,8 @@ from t2db_objects.tests.common import randomUser
 from t2db_objects.tests.common import randomJob
 from t2db_objects.tests.common import randomTweetStreaming
 from t2db_objects.tests.common import randomTweetSearch
-
+from t2db_objects.tests.common import randomStreaming
+from t2db_objects.tests.common import randomSearch
 
 ###############################################################################
 # Test for TWEET object
@@ -255,6 +258,92 @@ class TestTweetSearchObject(unittest.TestCase):
     def test_tweetSearchWithNone(self):
         self.rawTweetSearch0["command"] = None
         tweetSearch0 = TweetSearch(self.rawTweetSearch0)
+
+###############################################################################
+# test for Streaming object
+#
+###############################################################################
+class TestStreamingObject(unittest.TestCase):
+    def setUp(self):
+        self.rawStreaming0 = randomStreaming(0)
+        self.rawStreaming1 = randomStreaming(1)
+        #Invalid Streaming, no query
+        self.rawStreaming2 = randomStreaming(2)
+        del self.rawStreaming2["query"]
+        #Invalid Streaming, no consumer
+        self.rawStreaming3 = randomStreaming(3)
+        del self.rawStreaming3["consumer"]
+
+    def test_streamingCreationValid(self):
+        streaming0 = Streaming(self.rawStreaming0)
+        streaming1 = Streaming(self.rawStreaming1)
+        self.assertTrue(streaming0.equalHash(self.rawStreaming0))
+        self.assertTrue(streaming1.equalHash(self.rawStreaming1))
+
+    def test_streamingEqual(self):
+        streaming0 = Streaming(self.rawStreaming0)
+        streaming1 = Streaming(self.rawStreaming1)
+        self.assertTrue(streaming0.equal(streaming0))
+        self.assertFalse(streaming0.equal(streaming1))
+
+    def test_streamingCreationInvalid(self):
+        self.assertRaises(Exception, Streaming, self.rawStreaming2)
+        self.assertRaises(Exception, Streaming, self.rawStreaming3)
+
+    def test_streamingToHash(self):
+        streaming0 = Streaming(self.rawStreaming0)
+        streaming1 = Streaming(self.rawStreaming1)
+        hashStreaming0 = streaming0.toHash()
+        hashStreaming1 = streaming1.toHash()
+        self.assertTrue(streaming0.equalHash(hashStreaming0))
+        self.assertTrue(streaming1.equalHash(hashStreaming1))
+
+    def test_streamingWithNone(self):
+        self.rawStreaming0["query"] = None
+        streaming0 = Streaming(self.rawStreaming0)
+
+###############################################################################
+# test for Search object
+#
+###############################################################################
+class TestSearchObject(unittest.TestCase):
+    def setUp(self):
+        self.rawSearch0 = randomSearch(0)
+        self.rawSearch1 = randomSearch(1)
+        #Invalid Search, no query
+        self.rawSearch2 = randomSearch(2)
+        del self.rawSearch2["query"]
+        #Invalid Search, no consumer
+        self.rawSearch3 = randomSearch(3)
+        del self.rawSearch3["consumer"]
+
+    def test_searchCreationValid(self):
+        search0 = Search(self.rawSearch0)
+        search1 = Search(self.rawSearch1)
+        self.assertTrue(search0.equalHash(self.rawSearch0))
+        self.assertTrue(search1.equalHash(self.rawSearch1))
+
+    def test_searchEqual(self):
+        search0 = Search(self.rawSearch0)
+        search1 = Search(self.rawSearch1)
+        self.assertTrue(search0.equal(search0))
+        self.assertFalse(search0.equal(search1))
+
+    def test_searchCreationInvalid(self):
+        self.assertRaises(Exception, Search, self.rawSearch2)
+        self.assertRaises(Exception, Search, self.rawSearch3)
+
+    def test_searchToHash(self):
+        search0 = Search(self.rawSearch0)
+        search1 = Search(self.rawSearch1)
+        hashSearch0 = search0.toHash()
+        hashSearch1 = search1.toHash()
+        self.assertTrue(search0.equalHash(hashSearch0))
+        self.assertTrue(search1.equalHash(hashSearch1))
+
+    def test_searchWithNone(self):
+        self.rawSearch0["query"] = None
+        search0 = Search(self.rawSearch0)
 
 ###############################################################################
 # test for CONFIGURATION object
