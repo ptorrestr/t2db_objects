@@ -33,6 +33,16 @@ def readConfigFile(configFilePath):
             numLine += 1
     return properties
 
+""" Read a file line by line, adding each line to a list """
+def readListFile(listFilePath):
+    #TODO Comment could be in any place
+    lines = []
+    with open(listFilePath, "r", -1, "utf-8") as listFile:
+        for line in listFile:
+            if not line.startswith("#") and len(line.strip()) > 0:
+                lines.append(line)
+    return lines
+
 # Write the content in the file pointed by filePath
 def writeFile(filePath, content, encoding = "utf-8"):
     with open(filePath, "w", -1, encoding) as newFile:
