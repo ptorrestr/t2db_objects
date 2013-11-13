@@ -1,3 +1,27 @@
+commit 7759c26b91d3e0e5185b3c6e17f4d9d796b4222e
+Author: Pablo Torres <pablo.torres@deri.org>
+Date:   Wed Nov 13 14:03:06 2013 +0000
+
+    Support for reading text files line by line
+
+commit 36bca346c55d91a3694cc7744d82ee3c76ba915f
+Author: Pablo Torres <pablo.torres@deri.org>
+Date:   Sat Oct 5 15:56:27 2013 +0100
+
+    update setup.py
+
+commit 993a89d4aa95369e0bd01a2cdb6a8b5d653243dc
+Author: Pablo Torres <pablo.torres@deri.org>
+Date:   Sat Oct 5 15:55:58 2013 +0100
+
+    add parameters to daemon
+
+commit b6406fc60399a884b4897650d0e847bb21362de2
+Author: Pablo Torres <pablo.torres@deri.org>
+Date:   Thu Oct 3 17:45:51 2013 +0100
+
+    update CHANGES file
+
 commit 461511ba80c3d578e2f95e221646f999a4a0ea96
 Author: Pablo Torres <pablo.torres@deri.org>
 Date:   Thu Oct 3 17:45:05 2013 +0100
