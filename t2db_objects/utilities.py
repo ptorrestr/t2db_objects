@@ -1,4 +1,5 @@
 import os
+import re
 
 # Return a numeric representation of boolean values. 0 if booleanValue is false,
 # 1 if bool_is true
@@ -22,14 +23,21 @@ def readConfigFile(configFilePath):
     #TODO Comment could be in any place
     properties = {}
     numLine = 1
+    keymatch = re.compile('^[A-Za-z0-9_]+[ \t]*=[ \t]*')
+    keymatch2 = re.compile('^[A-Za-z0-9_]+')
     with open(configFilePath, "r", -1, "utf-8") as configFile:
         for line in configFile:
-            if not line.startswith("#") and len(line.strip()) > 0:
-                terms = line.strip().split("=")
-                try:
-                    properties[terms[0].strip()] = terms[1].strip()
-                except Exception as e:
-                    raise Exception("File not well formed, line = " + str(numLine))
+            try:
+                sublines = line.split("#")
+                subline = sublines[0]
+                if len(subline.strip()) > 0:
+                    gkey = keymatch.match(subline).group()
+                    value = subline.split(gkey)
+                    key = keymatch2.match(gkey).group()
+                    properties[key] = value[1]
+
+            except Exception as e:
+                raise Exception("File not well formed, line = " + str(numLine) + ", str = " + str(e))
             numLine += 1
     return properties
 

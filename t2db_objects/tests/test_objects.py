@@ -365,8 +365,9 @@ class TestConfigurationObject(unittest.TestCase):
         outputStr = ""
         for field in self.configurationFields:
             if field["type"] == str:
-                outputStr += field["name"] + " = " + randomStringFixed(10)
+                outputStr += field["name"] + " = " + randomStringFixed(10) + "# Coment1"
             elif field["type"] == int:
+                outputStr += "# Comment2 \n"
                 outputStr += field["name"] + " = " + str(randomInteger(100))
             outputStr += "\n"
         writeFile(self.configFilePath, outputStr)
