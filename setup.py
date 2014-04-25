@@ -6,7 +6,7 @@ def readme():
 
 setup(
     name = 't2db_objects',
-    version = '0.5.6',
+    version = '0.5.7',
     description = 'Bases objects for t2db',
     long_description = readme(),
     classifiers = [

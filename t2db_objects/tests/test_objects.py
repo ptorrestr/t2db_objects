@@ -19,6 +19,7 @@ from t2db_objects.objects import encodeObject
 from t2db_objects.objects import formatHash
 
 from t2db_objects.utilities import readConfigFile
+from t2db_objects.utilities import readConfigFile2
 from t2db_objects.utilities import writeFile
 from t2db_objects.utilities import removeFile
 
@@ -374,6 +375,12 @@ class TestConfigurationObject(unittest.TestCase):
 
     def test_configurationCreationValid(self):
         rawConfigurationNoFormat = readConfigFile(self.configFilePath)
+        rawConfiguration = formatHash(rawConfigurationNoFormat, self.configurationFields)
+        configuration = Configuration(self.configurationFields, rawConfiguration)
+        self.assertTrue(configuration, rawConfiguration)
+
+    def test_configurationCreationValidPython2(self):
+        rawConfigurationNoFormat = readConfigFile2(self.configFilePath)
         rawConfiguration = formatHash(rawConfigurationNoFormat, self.configurationFields)
         configuration = Configuration(self.configurationFields, rawConfiguration)
         self.assertTrue(configuration, rawConfiguration)

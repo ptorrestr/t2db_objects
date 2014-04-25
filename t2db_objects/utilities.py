@@ -20,7 +20,6 @@ def boolean2int(booleanValue):
 # the left side of the equal symbol. The value of the property is at
 # the right side of the equal symbol. 
 def readConfigFile(configFilePath):
-    #TODO Comment could be in any place
     properties = {}
     numLine = 1
     keymatch = re.compile('^[A-Za-z0-9_]+[ \t]*=[ \t]*')
@@ -40,6 +39,33 @@ def readConfigFile(configFilePath):
                 raise Exception("File not well formed, line = " + str(numLine) + ", str = " + str(e))
             numLine += 1
     return properties
+
+# The same method for python2
+def readConfigFile2(configFilePath):
+  properties = {}
+  numLine = 1
+  keymatch = re.compile('^[A-Za-z0-9_]+[ \t]*=[ \t]*')
+  keymatch2 = re.compile('^[A-Za-z0-9_]+')
+  with open(configFilePath, "r", -1) as configFile:
+    for line in configFile:
+      try:
+        sublines = line.split("#")
+        subline = sublines[0]
+        if len(subline.strip()) > 0:
+          gkey = keymatch.match(subline).group()
+          value = subline.split(gkey)
+          key = keymatch2.match(gkey).group()
+          if value[1] == "\\t":
+            value[1] = "\t"
+          elif value[1] == "\\n":
+            value[1] = "\n"
+          properties[key] = value[1]
+
+      except Exception as e:
+        raise Exception("File not well formed, line = " + str(numLine) + ", str = " + str(e))
+      numLine += 1
+  return properties
+  
 
 """ Read a file line by line, adding each line to a list """
 def readListFile(listFilePath):
