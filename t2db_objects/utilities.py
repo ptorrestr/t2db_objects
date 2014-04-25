@@ -33,7 +33,7 @@ def readConfigFile(configFilePath):
                     gkey = keymatch.match(subline).group()
                     value = subline.split(gkey)
                     key = keymatch2.match(gkey).group()
-                    properties[key] = value[1]
+                    properties[key] = value[1].strip()
 
             except Exception as e:
                 raise Exception("File not well formed, line = " + str(numLine) + ", str = " + str(e))
@@ -55,6 +55,7 @@ def readConfigFile2(configFilePath):
           gkey = keymatch.match(subline).group()
           value = subline.split(gkey)
           key = keymatch2.match(gkey).group()
+          value[1] = value[1].strip()
           if value[1] == "\\t":
             value[1] = "\t"
           elif value[1] == "\\n":
@@ -65,7 +66,30 @@ def readConfigFile2(configFilePath):
         raise Exception("File not well formed, line = " + str(numLine) + ", str = " + str(e))
       numLine += 1
   return properties
-  
+
+def formatHash(myHash, myFields):
+  """
+  Ensure that the configuration values (myHash) are in the correct format (myFields).
+  """
+  newHash = {}
+  for field in myFields:
+    if not "name" in field:
+      raise Exception ("'" + field + "' is not valid tuple: Name missing")
+    if not "kind" in field:
+      raise Exception ("'" + field + "' is not valid tuple: Kind missing")
+    if not "type" in field:
+      raise Exception ("'" + field + "' is not valid tuple: Type missing")
+    name_ = field["name"]
+    kind_ = field["kind"]
+    type_ = field["type"]
+    if kind_ == "mandatory" and not name_ in myHash:
+      raise Exception ("'Object does not have '" + name_ + "'")
+    if name_ in myHash:
+      if type_ == list:
+        newHash[name_] = myHash[name_].split()
+      else:
+        newHash[name_] = type_(myHash[name_])
+  return newHash  
 
 """ Read a file line by line, adding each line to a list """
 def readListFile(listFilePath):
