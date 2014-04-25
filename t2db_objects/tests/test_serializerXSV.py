@@ -195,6 +195,30 @@ class TestParserXSVClass(unittest.TestCase):
       count += len(rawObjects)
     self.assertEqual(count, 100)
 
+  def testNextLines2(self):
+    fields = ["date", "id", "hash", "user_id", "status"]
+    filePath = "./etc/example2.tsv"
+    p = ParserXSV(fields, filePath)
+    count = 0
+    while True:
+      rawObjects = p.nextObjects2()
+      if not rawObjects:
+        break
+      count += len(rawObjects)
+    self.assertEqual(count, 7)
+
+  def testNextLines3(self):
+    fields = ["date", "id", "hash", "user_id", "status"]
+    filePath = "./etc/example3.tsv"
+    p = ParserXSV(fields, filePath, criteria = ",")
+    count = 0
+    while True:
+      rawObjects = p.nextObjects2()
+      if not rawObjects:
+        break
+      count += len(rawObjects)
+    self.assertEqual(count, 7)
+
   def testNextLinesGreaterBuffer(self):
     fields = ["date", "id", "hash", "user_id", "status"]
     filePath = "./etc/example.tsv"

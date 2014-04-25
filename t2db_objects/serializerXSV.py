@@ -9,8 +9,9 @@ from itertools import islice
 import logging
 from os import remove
 from os.path import isfile
+import re
 
-logger = logging.getLogger("clean_text")
+logger = logging.getLogger("t2db_objects")
 
 class BufferedReader(object):
   """
@@ -164,6 +165,9 @@ class ParserXSV(Parser):
     if not lines:
       return lines
     rawObjectList = []
+    text = ""
+    for line in lines:
+      text += line
     for line in lines:
       self.count += 1
       if line == "":
@@ -172,6 +176,45 @@ class ParserXSV(Parser):
       rawObjectList.append(rawObject)
     logger.debug("Objects read = " + str(len(rawObjectList)))
     return rawObjectList
+
+  def nextObjects2(self):
+    lines = self.reader.nextLines()
+    if not lines:
+      return lines
+    r = lineMatcher(len(self.fields), self.criteria)
+    rawObjectList = []
+    self.countLine = 1
+    previous = False
+    previousLine = ""
+    for line in lines:
+      if previous:
+        previous = False
+        line = previousLine + line
+        previousLine = ""
+      if line == "":
+        logger.warn("Empty line found at: " + str(self.countLine))
+      try:
+        logger.debug(line)
+        groups = r.match(line).groups()
+        rawObject = {}
+        for i in range(0, len(self.fields)):
+          rawObject[self.fields[i]] = groups[i]
+        logger.debug(rawObject)
+        rawObjectList.append(rawObject)
+      except Exception as e:
+        previous = True
+        previousLine = line
+        logger.warn("Training to match line: " + str(self.countLine))
+      self.countLine += 1
+    return rawObjectList
+
+def lineMatcher(numFields, criteria):
+  regexField = '((?:(?:[^"'+criteria+'\n]+|"[^"]+"|"")))'
+  regexLine = '^'
+  for i in range(0, numFields - 1):
+    regexLine += regexField + criteria
+  regexLine += regexField + '$'
+  return re.compile(regexLine)
 
 # Exceptions
 class ColumnsNotEquivalentException(Exception):
