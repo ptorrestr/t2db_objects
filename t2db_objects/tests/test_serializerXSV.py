@@ -6,6 +6,7 @@ from os.path import isfile
 from t2db_objects.serializerXSV import BufferedReader
 from t2db_objects.serializerXSV import append
 from t2db_objects.serializerXSV import SerializerXSV
+from t2db_objects.serializerXSV import BufferedParserXSV
 from t2db_objects.serializerXSV import ParserXSV
 from t2db_objects.serializerXSV import ColumnsNotEquivalentException
 
@@ -139,21 +140,21 @@ class TestSerializerXSVClass(unittest.TestCase):
     self.assertEqual(lineCount(filePath), 2)
     remove(filePath)
 
-class TestParserXSVClass(unittest.TestCase):
+class TestBufferedParserXSVClass(unittest.TestCase):
   def setUp(self):
     pass
 
   def testInit(self):
     fields = ["date", "id", "hash", "user_id", "status"]
     filePath = "./etc/example.tsv"
-    p = ParserXSV(fields, filePath)
+    p = BufferedParserXSV(fields, filePath)
     p.close()
 
   def testParseLine(self):
     fields = ["date", "id", "hash", "user_id", "status"]
     filePath = "./etc/example.tsv"
     line = "2011-08-07T05:57:45Z\t100068086551543808\t18974170\t293331739\t@ShesDopeTho good myself.."
-    p = ParserXSV(fields, filePath)
+    p = BufferedParserXSV(fields, filePath)
     obj = p.parseLine(line, 1)
     self.assertEqual(obj["date"], "2011-08-07T05:57:45Z")
     self.assertEqual(obj["id"], "100068086551543808")
@@ -166,7 +167,7 @@ class TestParserXSVClass(unittest.TestCase):
     fields = ["date", "id", "hash", "user_id", "status"]
     filePath = "./etc/example.tsv"
     line = "2011-08-07T05:57:45Z\t100068086551543808\t18974170\t293331739\t@ShesDopeTho good myself..\tother column"
-    p = ParserXSV(fields, filePath)
+    p = BufferedParserXSV(fields, filePath)
     obj = p.parseLine(line, 1)
     self.assertEqual(obj["date"], "2011-08-07T05:57:45Z")
     self.assertEqual(obj["id"], "100068086551543808")
@@ -179,14 +180,14 @@ class TestParserXSVClass(unittest.TestCase):
     fields = ["date", "id", "hash", "user_id", "status", "otherfield"]
     filePath = "./etc/example.tsv"
     line = "2011-08-07T05:57:45Z\t100068086551543808\t18974170\t293331739\t@ShesDopeTho good myself.."
-    p = ParserXSV(fields, filePath)
+    p = BufferedParserXSV(fields, filePath)
     self.assertRaises(ColumnsNotEquivalentException, p.parseLine, line, 1)
     p.close()
 
   def testNextLines(self):
     fields = ["date", "id", "hash", "user_id", "status"]
     filePath = "./etc/example.tsv"
-    p = ParserXSV(fields, filePath)
+    p = BufferedParserXSV(fields, filePath)
     count = 0
     while True:
       rawObjects = p.nextObjects()
@@ -198,7 +199,7 @@ class TestParserXSVClass(unittest.TestCase):
   def testNextLines2(self):
     fields = ["date", "id", "hash", "user_id", "status"]
     filePath = "./etc/example2.tsv"
-    p = ParserXSV(fields, filePath)
+    p = BufferedParserXSV(fields, filePath)
     count = 0
     while True:
       rawObjects = p.nextObjects2()
@@ -210,7 +211,7 @@ class TestParserXSVClass(unittest.TestCase):
   def testNextLines3(self):
     fields = ["date", "id", "hash", "user_id", "status"]
     filePath = "./etc/example3.tsv"
-    p = ParserXSV(fields, filePath, criteria = ",")
+    p = BufferedParserXSV(fields, filePath, criteria = ",")
     count = 0
     while True:
       rawObjects = p.nextObjects2()
@@ -222,7 +223,7 @@ class TestParserXSVClass(unittest.TestCase):
   def testNextLinesGreaterBuffer(self):
     fields = ["date", "id", "hash", "user_id", "status"]
     filePath = "./etc/example.tsv"
-    p = ParserXSV(fields, filePath, 200)
+    p = BufferedParserXSV(fields, filePath, 200)
     while True:
       rawObjects = p.nextObjects()
       if not rawObjects:
@@ -232,9 +233,32 @@ class TestParserXSVClass(unittest.TestCase):
   def testNextLinesSmallerBuffer(self):
     fields = ["date", "id", "hash", "user_id", "status"]
     filePath = "./etc/example.tsv"
-    p = ParserXSV(fields, filePath, 50)
+    p = BufferedParserXSV(fields, filePath, 50)
     while True:
       rawObjects = p.nextObjects()
       if not rawObjects:
         break
     self.assertEqual(p.count, 100)
+
+class TestParserXSVClass(unittest.TestCase):
+  def setUp(self):
+    pass
+
+  def testNextLines1(self):
+    fields = ['id','status','hash','created_at', 'c1','c2','user_id','name','screen_name','image']
+    filePath = "./etc/example4.csv"
+    p = ParserXSV(fields, filePath, criteria = ",")
+    count = 0
+    rawObjects = p.nextObjects()
+    count += len(rawObjects)
+    self.assertEqual(count, 5)
+
+  def testNextLines2(self):
+    fields = ['id','status','hash','created_at', 'c1','c2','user_id','name','screen_name','image']
+    filePath = "./etc/example5.csv"
+    p = ParserXSV(fields, filePath, criteria = ",")
+    count = 0
+    rawObjects = p.nextObjects()
+    count += len(rawObjects)
+    self.assertEqual(count, 89) 
+

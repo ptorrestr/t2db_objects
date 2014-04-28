@@ -10,6 +10,8 @@ import logging
 from os import remove
 from os.path import isfile
 import re
+import csv
+import codecs
 
 logger = logging.getLogger("t2db_objects")
 
@@ -118,7 +120,7 @@ class Parser(object):
   """
   pass
 
-class ParserXSV(Parser):
+class BufferedParserXSV(Parser):
   """
   This class can parse a XSV fifle
   """
@@ -126,7 +128,7 @@ class ParserXSV(Parser):
     """
     Constructor: The fields contains the list of fields of the XSV file, filePath point to the file, lines
     inidicates the number of line to store in the buffere and criteria is the token defintion to divide
-    fields from fields.
+    fields from fields. It does not support quouting in string text.
     """
     self.fields = fields
     self.reader = BufferedReader(filePath, lines)
@@ -209,12 +211,30 @@ class ParserXSV(Parser):
     return rawObjectList
 
 def lineMatcher(numFields, criteria):
-  regexField = '((?:(?:[^"'+criteria+'\n]+|"[^"]+"|"")))'
+  regexField = '([^"'+criteria+'\n]+|"[^"]*")'
   regexLine = '^'
   for i in range(0, numFields - 1):
     regexLine += regexField + criteria
   regexLine += regexField + '$'
   return re.compile(regexLine)
+
+class ParserXSV(Parser):
+  def __init__(self, fields, filePath, criteria = "\t"):
+    super(ParserXSV).__init__()
+    self.fields = fields
+    self.path = filePath
+    self.criteria = criteria
+
+  def nextObjects(self):
+    output = []
+    with codecs.open(self.path, "r") as csvFile:
+      dialect = csv.Sniffer().sniff(csvFile.read(1024))
+      dialect.delimiter = self.criteria 
+      csvFile.seek(0)
+      reader = csv.DictReader(csvFile, dialect = dialect, fieldnames = self.fields)
+      for line in reader:
+        output.append(line)
+    return output 
 
 # Exceptions
 class ColumnsNotEquivalentException(Exception):
