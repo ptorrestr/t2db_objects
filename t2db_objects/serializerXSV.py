@@ -220,7 +220,7 @@ def lineMatcher(numFields, criteria):
 
 class ParserXSV(Parser):
   def __init__(self, fields, filePath, criteria = "\t"):
-    super(ParserXSV).__init__()
+    super(ParserXSV, self).__init__()
     self.fields = fields
     self.path = filePath
     self.criteria = criteria
