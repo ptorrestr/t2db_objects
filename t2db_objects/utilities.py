@@ -86,9 +86,7 @@ def formatHash(myHash, myFields):
     if kind_ == "mandatory" and not name_ in myHash:
       raise Exception ("'Object does not have '" + name_ + "'")
     if name_ in myHash:
-      if type_ == list:
-        newHash[name_] = myHash[name_].split()
-      if type_ == dict:
+      if type_ == dict or type_ == list or type_ == tuple:
         newHash[name_] = ast.literal_eval(myHash[name_])
       else:
         newHash[name_] = type_(myHash[name_])
