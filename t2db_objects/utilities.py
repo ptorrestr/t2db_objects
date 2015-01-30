@@ -1,5 +1,6 @@
 import os
 import re
+import ast
 
 # Return a numeric representation of boolean values. 0 if booleanValue is false,
 # 1 if bool_is true
@@ -87,6 +88,8 @@ def formatHash(myHash, myFields):
     if name_ in myHash:
       if type_ == list:
         newHash[name_] = myHash[name_].split()
+      if type_ == dict:
+        newHash[name_] = ast.literal_eval(myHash[name_])
       else:
         newHash[name_] = type_(myHash[name_])
   return newHash  
