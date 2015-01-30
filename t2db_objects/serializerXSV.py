@@ -228,7 +228,7 @@ class ParserXSV(Parser):
   def nextObjects(self):
     output = []
     with codecs.open(self.path, "r") as csvFile:
-      dialect = csv.Sniffer().sniff(csvFile.read(1024), [self.criteria])
+      dialect = csv.Sniffer().sniff(csvFile.read(1024), ",\t :;")
       csvFile.seek(0)
       reader = csv.DictReader(csvFile, dialect = dialect, fieldnames = self.fields)
       for line in reader:
