@@ -6,7 +6,7 @@ def readme():
 
 setup(
     name = 't2db_objects',
-    version = '0.6.1',
+    version = '0.6.2',
     description = 'Bases objects for t2db',
     long_description = readme(),
     classifiers = [
@@ -18,6 +18,7 @@ setup(
     license = 'GNU',
     packages = ['t2db_objects', 't2db_objects.tests'],
     install_requires = [
+      "pymongo >= 2.6.3",
     ],
     test_suite = 't2db_objects.tests',
     zip_safe = False,
