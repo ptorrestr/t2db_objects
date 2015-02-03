@@ -232,6 +232,7 @@ class ParserXSV(Parser):
         dialect = csv.Sniffer().sniff(csvFile.read(1024), self.criteria)
       except csv.Error:
         dialect = csv.excel
+      print(dialect)
       csvFile.seek(0)
       reader = csv.DictReader(csvFile, dialect = dialect, fieldnames = self.fields)
       for line in reader:
