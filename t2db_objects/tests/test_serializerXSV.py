@@ -240,6 +240,16 @@ class TestBufferedParserXSVClass(unittest.TestCase):
         break
     self.assertEqual(p.count, 100)
 
+  def testNextLinesBufferFile2(self):
+    fields = ["id","name","asciiname","alternatenames","latitude","longitude","feature_class","feature_code","country_code","cc2","admin1_code","admin2_code","admin3_code","admin4_code","population","elevation","dem","timezone","modification_date"]
+    filePath = "./etc/example6.tsv"
+    p = BufferedParserXSV(fields, filePath, 50)
+    while True:
+      rawObjects = p.nextObjects()
+      if not rawObjects:
+        break
+    self.assertEqual(p.count, 100)
+
 class TestParserXSVClass(unittest.TestCase):
   def setUp(self):
     pass
