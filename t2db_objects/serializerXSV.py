@@ -40,6 +40,7 @@ class BufferedReader(object):
     Get the next lines(declared in the constructor) in the file. If there is no more line, a None object
     is returned.
     """
+    print(self.lines)
     nextLines = list(islice(self.f, self.lines))
     if not nextLines:
       self.close()
