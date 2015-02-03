@@ -204,7 +204,7 @@ class BufferedParserXSV(Parser):
         logger.debug(rawObject)
         rawObjectList.append(rawObject)
       except Exception as e:
-        logger.warn(e)
+        logger.warn("error " + str(e))
         previous = True
         previousLine = line
         logger.warn("Training to match line: " + str(self.countLine))
