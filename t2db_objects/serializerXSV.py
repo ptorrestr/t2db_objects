@@ -230,9 +230,13 @@ class ParserXSV(Parser):
     with codecs.open(self.path, "r") as csvFile:
       try:
         dialect = csv.Sniffer().sniff(csvFile.read(1024), self.criteria)
-      except csv.Error:
-        dialect = csv.excel
-      print(dialect)
+      except csv.Error as e:
+        logger.warn(e)
+        logger.warn("Using defautl excel format")
+        if self.criteria == "\t":
+          dialect = csv.excel_tab
+        else:
+          dialect = csv.excel
       csvFile.seek(0)
       reader = csv.DictReader(csvFile, dialect = dialect, fieldnames = self.fields)
       for line in reader:
