@@ -40,7 +40,6 @@ class BufferedReader(object):
     Get the next lines(declared in the constructor) in the file. If there is no more line, a None object
     is returned.
     """
-    print(self.lines)
     nextLines = list(islice(self.f, self.lines))
     if not nextLines:
       self.close()
@@ -205,6 +204,7 @@ class BufferedParserXSV(Parser):
         logger.debug(rawObject)
         rawObjectList.append(rawObject)
       except Exception as e:
+        logger.warn(e)
         previous = True
         previousLine = line
         logger.warn("Training to match line: " + str(self.countLine))
