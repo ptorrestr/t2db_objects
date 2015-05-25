@@ -1,3 +1,4 @@
+import subprocess
 from setuptools import setup
 
 def readme():
