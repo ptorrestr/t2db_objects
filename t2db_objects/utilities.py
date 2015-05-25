@@ -85,12 +85,17 @@ def formatHash(myHash, myFields):
     type_ = field["type"]
     if kind_ == "mandatory" and not name_ in myHash:
       raise Exception ("'Object does not have '" + name_ + "'")
-    if name_ in myHash:
-      if type_ == dict or type_ == list or type_ == tuple:
-        newHash[name_] = ast.literal_eval(myHash[name_])
-      else:
-        newHash[name_] = type_(myHash[name_])
+    elif name_ in myHash:
+      newHash[name_] = check_value(type_, myHash[name_])
+    elif kind_ == 'non-mandatory' and 'default' in field:
+      newHash[name_] = check_value(type_, field['default'])
   return newHash  
+
+def check_value(type_, value):
+  if type_ == dict or type_ == list or type_ == tuple:
+    return ast.literal_eval(value)
+  else:
+    return type_(value)
 
 """ Read a file line by line, adding each line to a list """
 def readListFile(listFilePath):

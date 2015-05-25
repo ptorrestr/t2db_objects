@@ -74,7 +74,7 @@ class MongoDB(object):
       self.client = MongoClient(uri)
     except Exception as e:
       raise
-    if not self.client.alive():
+    if not self.client.server_info():
       raise("Error: Mongodb communication failed")
   
   def close(self):
