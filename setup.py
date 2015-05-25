@@ -34,7 +34,7 @@ setup(
   author_email = 'pablo.torres.t@gmail.com',
   license = 'GNU',
   packages = ['t2db_objects', 't2db_objects.tests'],
-  install_requires = dependencies()
+  install_requires = dependencies(),
   test_suite = 't2db_objects.tests',
   zip_safe = False,
 )
