@@ -3,7 +3,7 @@ from t2db_objects import objects
 from t2db_objects.utilities import readConfigFile2 as readConfigFile
 from t2db_objects.utilities import formatHash
 
-def generate_config(config_fields, conf_file_path):
+def generate_config(conf_fields, conf_file_path):
   raw_config_no_format = readConfigFile(conf_file_path)
   raw_config = formatHash(raw_config_no_format, conf_fields)
   return objects.Configuration(conf_fields, raw_config)
