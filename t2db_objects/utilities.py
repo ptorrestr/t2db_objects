@@ -99,13 +99,15 @@ def check_value(type_, value):
 
 """ Read a file line by line, adding each line to a list """
 def readListFile(listFilePath):
-    #TODO Comment could be in any place
-    lines = []
-    with open(listFilePath, "r", -1, "utf-8") as listFile:
-        for line in listFile:
-            if not line.startswith("#") and len(line.strip()) > 0:
-                lines.append(line)
-    return lines
+  #TODO Comment could be in any place
+  if not os.path.isfile(listFilePath):
+    raise Exception("File : " + path + " was not found")
+  lines = []
+  with open(listFilePath, "r") as listFile:
+    for line in listFile:
+      if not line.startswith("#") and len(line.strip()) > 0:
+        lines.append(line.strip())
+  return lines
 
 # Write the content in the file pointed by filePath
 def writeFile(filePath, content, encoding = "utf-8"):
