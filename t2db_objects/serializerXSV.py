@@ -151,7 +151,7 @@ class BufferedParserXSV(Parser):
       raise ColumnsNotEquivalentException("Line " + str(lineNum) + ": Column missing, fields = " 
         + str(len(self.fields)) + ", columns = " + str(len(columns)))
     if len(self.fields) < len(columns):
-      logger.warn("Line " + str(lineNum) + ": Some columns are not considered")
+      logger.warning("Line " + str(lineNum) + ": Some columns are not considered")
     rawObject = {}
     i = 0
     for field in self.fields:
@@ -173,7 +173,7 @@ class BufferedParserXSV(Parser):
     for line in lines:
       self.count += 1
       if line == "":
-        logger.warn("Empty line found at: " + str(countLine))
+        logger.warning("Empty line found at: " + str(countLine))
       rawObject = self.parseLine(line, self.count)
       rawObjectList.append(rawObject)
     logger.debug("Objects read = " + str(len(rawObjectList)))
@@ -194,7 +194,7 @@ class BufferedParserXSV(Parser):
         line = previousLine + line
         previousLine = ""
       if line == "":
-        logger.warn("Empty line found at: " + str(self.countLine))
+        logger.warning("Empty line found at: " + str(self.countLine))
       try:
         logger.debug(line)
         groups = r.match(line).groups()
@@ -204,10 +204,10 @@ class BufferedParserXSV(Parser):
         logger.debug(rawObject)
         rawObjectList.append(rawObject)
       except Exception as e:
-        logger.warn("error " + str(e))
+        logger.warning("error " + str(e))
         previous = True
         previousLine = line
-        logger.warn("Training to match line: " + str(self.countLine))
+        logger.warning("Training to match line: " + str(self.countLine))
       self.countLine += 1
     return rawObjectList
 
@@ -232,8 +232,8 @@ class ParserXSV(Parser):
       try:
         dialect = csv.Sniffer().sniff(csvFile.read(1024), self.criteria)
       except csv.Error as e:
-        logger.warn(e)
-        logger.warn("Using defautl excel format")
+        logger.warning(e)
+        logger.warning("Using defautl excel format")
         if self.criteria == "\t":
           dialect = csv.excel_tab
         else:

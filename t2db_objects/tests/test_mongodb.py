@@ -4,7 +4,6 @@ from t2db_objects.mongodb import CollectionMongoDB
 from t2db_objects.mongodb import DatabaseMongoDB
 from t2db_objects.mongodb import MongoDB
 
-@unittest.skip("Avoiding Mongo")
 class TestCollectionMongoDB(unittest.TestCase):
   def setUp(self):
     connection = MongoDB("localhost")
@@ -20,15 +19,15 @@ class TestCollectionMongoDB(unittest.TestCase):
     collection = CollectionMongoDB(self.db, "name")
     testDocument = { "value1": 123, "value2": 321 }
     id1 = collection.addDoc(testDocument)
-    storedDocument = collection.getDoc(id1)
+    storedDocument = collection.getDoc(id1.inserted_id)
     self.assertEqual(testDocument["value1"], storedDocument["value1"])
     self.assertEqual(testDocument["value2"], storedDocument["value2"])
     storedDocument["value1"] = 456
     storedDocument["value2"] = 654
     res = collection.updDoc(storedDocument)
-    self.assertEqual(res["n"], 1)
-    res = collection.remDoc(id1)
-    self.assertEqual(res["n"], 1)
+    self.assertEqual(res.matched_count, 1)
+    res = collection.remDoc(id1.inserted_id)
+    self.assertEqual(res.deleted_count, 1)
 
   def test_notValidAddDoc(self):
     collection = CollectionMongoDB(self.db, "name")
@@ -51,7 +50,7 @@ class TestCollectionMongoDB(unittest.TestCase):
     document1 = { "value1": 123, "value2": 321 }
     document2 = { "value1": 123, "value2": 456 }
     docs =[ document1, document2 ]
-    [id1, id2] = collection.addManyDocs(docs)
+    [id1, id2] = collection.addManyDocs(docs).inserted_ids
     stored1 = collection.getDoc(id1)
     stored2 = collection.getDoc(id2)
     self.assertEqual(document1["value1"], stored1["value1"])
@@ -60,16 +59,17 @@ class TestCollectionMongoDB(unittest.TestCase):
     self.assertEqual(document2["value2"], stored2["value2"])
     criteria = {"value1":document1["value1"]}
     res = collection.remDocByCriteria(criteria)
-    self.assertGreater(res["n"], 1)
+    self.assertGreater(res.deleted_count, 1)
     id1 = collection.addDoc(document1)
     id2 = collection.addDoc(document2)
     criteria = {"value2":document1["value2"]}
     res = collection.remDocByCriteria(criteria)
-    self.assertEqual(res["n"], 1)
-    stored2 = collection.getDoc(id2)
+    self.assertEqual(res.deleted_count, 1)
+    stored2 = collection.getDoc(id2.inserted_id)
     self.assertEqual(document2["value1"], stored2["value1"])
     self.assertEqual(document2["value2"], stored2["value2"])
-    collection.remAll()
+    res = collection.remAll()
+    self.assertEqual(res.deleted_count, 1)
 
   def test_notValidRemDocByCriteria(self):
     collection = CollectionMongoDB(self.db, "name")
@@ -81,7 +81,7 @@ class TestCollectionMongoDB(unittest.TestCase):
     document1 = { "value1": 123, "value2": 321 }
     document2 = { "value1": 123, "value2": 456 }
     docs =[ document1, document2 ]
-    [id1, id2] = collection.addManyDocs(docs)
+    [id1, id2] = collection.addManyDocs(docs).inserted_ids
     stored1 = collection.getDoc(id1)
     stored2 = collection.getDoc(id2)
     self.assertEqual(document1["value1"], stored1["value1"])
@@ -91,14 +91,14 @@ class TestCollectionMongoDB(unittest.TestCase):
     criteria = { "value1":document1["value1"] }
     newValues = { "value1": 1 }
     res = collection.updDocByCriteria(criteria, newValues)
-    self.assertEqual(res["n"], 2)
+    self.assertEqual(res.matched_count, 2)
     criteria = { "value2":document1["value2"] }
     newValues = { "value2": 2 }
     res = collection.updDocByCriteria(criteria, newValues)
-    self.assertEqual(res["n"], 1)
+    self.assertEqual(res.matched_count, 1)
     criteria = { "value1" : 1 }
     res = collection.remDocByCriteria(criteria)
-    self.assertEqual(res["n"], 2)
+    self.assertEqual(res.deleted_count, 2)
 
   def test_notValidUpdDocByCriteria(self):
     collection = CollectionMongoDB(self.db, "name")
@@ -112,13 +112,13 @@ class TestCollectionMongoDB(unittest.TestCase):
   def test_addManyDocs(self):
     collection = CollectionMongoDB(self.db, "name")
     docs = [ { "id":90, "value":10}, {"value1":90, "value2":11 } ]
-    [id1, id2 ] = collection.addManyDocs(docs)
+    [id1, id2 ] = collection.addManyDocs(docs).inserted_ids
     collection.remAll()
 
   def test_getDocByCriteria(self):
     collection = CollectionMongoDB(self.db, "name")
     docs = [ {"value1":90, "value2":10}, { "value1":90, "value2":11 } ]
-    [id1, id2 ] = collection.addManyDocs(docs)
+    [id1, id2 ] = collection.addManyDocs(docs).inserted_ids
     criteria = { "value1":90 }
     storedDocs = collection.getDocByCriteria(criteria)
     self.assertEqual(len(storedDocs), 2)
@@ -129,7 +129,6 @@ class TestCollectionMongoDB(unittest.TestCase):
     criteria = "wrong criteria"
     self.assertRaises(Exception, collection.getDocByCriteria, (criteria,))
 
-@unittest.skip("Avoiding Mongo")
 class TestDatabaseMongoDB(unittest.TestCase):
   def test_validCreation(self):
     connection = MongoDB("localhost")
@@ -143,13 +142,12 @@ class TestDatabaseMongoDB(unittest.TestCase):
     db = DatabaseMongoDB(connection, "name")
     collection = db.getCollection("name")
 
-@unittest.skip("Avoiding Mongo")
 class TestMonogDB(unittest.TestCase):
   def test_validCreation(self):
     connection = MongoDB("localhost")
     
   def test_notValidCreation(self):
-    self.assertRaises(Exception, MongoDB, ("otherHost",))
+    self.assertRaises(Exception, MongoDB, "otherHost", serverSelectionTimeoutMS = 1000)
 
   def test_close(self):
     connection = MongoDB("localhost")

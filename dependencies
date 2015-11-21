@@ -1,2 +1,2 @@
-pymongo >= 2.6.3
+pymongo >= 3.1.1
 pyyaml >= 3.11
