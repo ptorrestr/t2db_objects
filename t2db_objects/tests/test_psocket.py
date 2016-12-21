@@ -89,7 +89,6 @@ def receiveDataMany(host, port):
     sharedListLock.release()
     sock.close()    
 
-@unittest.skip("Avoiding psockets")
 class TestSocketObject(unittest.TestCase):
     def setUp(self):
         # Re-start global variables
