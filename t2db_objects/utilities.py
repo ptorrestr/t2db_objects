@@ -120,3 +120,9 @@ def removeFile(filePath):
         os.remove(filePath)
     except Exception as e:
         raise Exception("Could not remove " + filePath + ": " + str(e))
+
+# Read environment variable
+def read_env_variable(env_variable_name):
+  if env_variable_name in os.environ:
+    return os.environ[ env_variable_name]
+  return None
