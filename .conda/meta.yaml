@@ -23,7 +23,6 @@ test:
   requires:
     - pytest
   commands:
-    - ls -la
     - pytest
 about:
   home: https://github.com/ptorrestr/t2db_objects.git
