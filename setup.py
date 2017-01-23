@@ -8,15 +8,13 @@ def readme():
 def version():
   out = subprocess.Popen(['git','describe','--tags'], stdout = subprocess.PIPE, universal_newlines = True)
   out.wait()
-  if out.returncode:
-    with open('version') as f:
-      return f.read()
-  else:
+  if out.returncode == 0:
     m_version = out.stdout.read().strip()
-    print(m_version)
-    with open('version', 'w') as f:
-      f.write(m_version)
-    return m_version
+    version = m_version.split("-")
+    if len(version) > 0:
+      print(version[0])
+      return version[0]
+  return "0.0.1" #default version
 
 setup(
   name = 't2db_objects',
@@ -24,7 +22,7 @@ setup(
   description = 'Bases objects for t2db',
   long_description = readme(),
   classifiers = [
-    'Programming Language :: Python :: 3.4',
+    'Programming Language :: Python :: 3.5',
   ],
   url = 'http://github.com/ptorrest/t2db_objects',
   author = 'Pablo Torres',
