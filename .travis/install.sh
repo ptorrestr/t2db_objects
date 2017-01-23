@@ -28,6 +28,6 @@ conda config --add channels ptorrestr
 conda config --append channels pkgw
 conda config --get channels
 conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION
-conda install conda-build anaconda
+conda install conda-build anaconda-client
 source activate test-environment
 conda build .conda/ --no-test --no-anaconda-upload
