@@ -3,4 +3,4 @@
 set -e -x
 
 source activate test-environment
-pytest ./
+conda build -t .conda/
