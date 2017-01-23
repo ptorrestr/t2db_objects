@@ -1,4 +1,14 @@
-t2db_objects
-============
+# t2db\_objects
 
-t2db_objects
+## Local testing
+
+```
+conda-env create --files .conda/environment.yaml
+source activate t2db_objects-test
+pytest
+```
+
+## Build locally with Conda
+```
+conda build .conda/
+```
