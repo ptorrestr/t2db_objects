@@ -89,6 +89,7 @@ def receiveDataMany(host, port):
     sharedListLock.release()
     sock.close()    
 
+@unittest.skip("testing skipping")
 class TestSocketObject(unittest.TestCase):
     def setUp(self):
         # Re-start global variables
@@ -300,7 +301,7 @@ class TestSocketObject(unittest.TestCase):
         #Close server
         self.server.close()
 
-
+@unittest.skip("testing skipping")
 class TestSocketTimeout(unittest.TestCase):
     def setUp(self):
         # Re-start global variables
