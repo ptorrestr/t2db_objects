@@ -18,10 +18,6 @@ def version():
       f.write(m_version)
     return m_version
 
-def dependencies():
-  with open('dependencies') as f:
-    return f.readlines()
-
 setup(
   name = 't2db_objects',
   version = version(),
@@ -35,7 +31,6 @@ setup(
   author_email = 'pablo.torres.t@gmail.com',
   license = 'GNU',
   packages = ['t2db_objects', 't2db_objects.tests'],
-  install_requires = dependencies(),
   test_suite = 't2db_objects.tests',
   zip_safe = False,
 )
