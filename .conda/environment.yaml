@@ -9,3 +9,4 @@ dependencies:
   - setuptools
   - pyyaml
   - pymongo
+  - pytest

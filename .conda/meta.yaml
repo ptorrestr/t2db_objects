@@ -1,9 +1,10 @@
 package:
   name: t2db_objects
-  version: 0.7.6
+  version: {{ GIT_DESCRIBE_TAG }}
 source:
-  git_url: https://github.com/ptorrestr/t2db_objects.git
-  git_rev: 0.7.6
+  git_url: ../
+build:
+  number: {{ GIT_DESCRIBE_NUMBER }}
 requirements:
   build:
     - python
@@ -15,6 +16,14 @@ requirements:
     - setuptools
     - pymongo
     - pyyaml
+test:
+  source_files:
+    - t2db_objects/tests
+  requires:
+    - pytest
+  commands:
+    - ls -la
+    - pytest
 about:
   home: https://github.com/ptorrestr/t2db_objects.git
   license: GPLv3
