@@ -18,6 +18,7 @@ requirements:
     - pyyaml
 test:
   source_files:
+    - etc
     - t2db_objects/tests
   requires:
     - pytest
